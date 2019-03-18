@@ -40,3 +40,19 @@ def search(request):
         'results': page,
         'query_string': '?q=%s' % query}
     return render(request, 'search/results.html', ctx)
+
+def stores(request):
+    if not settings.ENABLE_SEARCH:
+        raise Http404('No such page!')
+    form = SearchForm(data=request.GET or None)
+    if form.is_valid():
+        query = form.cleaned_data.get('q', '')
+        results = evaluate_search_query(form, request)
+    else:
+        query, results = '', []
+    page = paginate_results(list(results), request.GET)
+    ctx = {
+        'query': query,
+        'results': page,
+        'query_string': '?q=%s' % query}
+    return render(request, 'search/results.html', ctx)

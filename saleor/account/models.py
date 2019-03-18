@@ -134,6 +134,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     token = models.UUIDField(default=get_token, editable=False, unique=True)
     is_active = models.BooleanField(default=True)
+    is_seller = models.BooleanField(default=False)
     note = models.TextField(null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now, editable=False)
     default_shipping_address = models.ForeignKey(

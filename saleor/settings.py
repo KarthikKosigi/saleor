@@ -37,7 +37,7 @@ ROOT_URLCONF = 'saleor.urls'
 WSGI_APPLICATION = 'saleor.wsgi.application'
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+     ('Karthik Kosigi', 'karthik.elated@gmail.com'),
 )
 MANAGERS = ADMINS
 
@@ -51,7 +51,7 @@ CACHES = {'default': django_cache_url.config()}
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://saleor:saleor@localhost:5432/saleor',
+        default='postgres://postgres:Vedavathi@localhost:5432/noqdb',
         conn_max_age=600)}
 
 
@@ -172,7 +172,7 @@ TEMPLATES = [{
         'string_if_invalid': '<< MISSING VARIABLE "%s" >>' if DEBUG else ''}}]
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = "vwtq716ck)hp@s)7ytpf_#al)ti5$e!o%277)90o+llthn)bm8"
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -226,6 +226,7 @@ INSTALLED_APPS = [
     'saleor.data_feeds',
     'saleor.page',
     'saleor.payment',
+    'saleor.seller',
 
     # External apps
     'versatileimagefield',

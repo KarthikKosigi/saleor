@@ -1,7 +1,7 @@
 import json
 
 from django.contrib import messages
-from django.template.response import TemplateResponse
+from django.template.response import TemplateResponse, HttpResponse
 from django.utils.translation import pgettext_lazy
 from impersonate.views import impersonate as orig_impersonate
 
@@ -13,6 +13,10 @@ from ..seo.schema.webpage import get_webpage_schema
 
 
 def home(request):
+    return TemplateResponse(
+        request, 'home.html')
+
+def sellerhome(request):
     products = products_for_homepage(
         request.user,
         request.site.settings.homepage_collection)[:8]
@@ -21,7 +25,7 @@ def home(request):
         local_currency=request.currency))
     webpage_schema = get_webpage_schema(request)
     return TemplateResponse(
-        request, 'home.html', {
+        request, 'seller_home.html', {
             'parent': None,
             'products': products,
             'webpage_schema': json.dumps(webpage_schema)})

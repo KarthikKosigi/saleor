@@ -1,59 +1,399 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
 {% load i18n %}
+{% load footer_menu menu from shop %}
+{% load placeholder %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% load translate_url from urls %}
 
-{% block content %}
-  <div class="home">
-    <div class="row">
-      <div class="col-sm-12 home__block1">
-        <div class="home--square">
-          <div class="home--content">
-            <div class="home--content-wrapper">
-              <div class="home--content-inner">
-                <h1>{% trans "Promo & Sale" context "Homepage title" %}</h1>
-                <h2>{% trans "from the Northpole" context "Homepage title" %}</h2>
-                  <a class="btn btn-secondary home__button" href="#">
-                    {% trans "Shop now" context "Homepage action" %}
+<html lang="{{ LANGUAGE_CODE }}" class="no-js" data-shipping-options-url="{% url 'cart:shipping-options' %}" data-cart-summary-url="{% url 'cart:summary' %}">
+<head>
+  <title>{% block title %}{{ site.name }}{% endblock %}</title>
+  {% block meta %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Saleor">
+    <meta name="theme-color" content="#333333">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="{{ site.name }}">
+    <meta name="og:type" content="website">
+    {% get_available_languages as LANGUAGES %}
+    {% for lang_code, language_name in LANGUAGES %}
+      <link rel="alternate" hreflang="{{ lang_code }}" href="{% translate_url url=request.path lang_code=lang_code %}" />
+    {% endfor %}
+  {% endblock meta %}
+
+  {% include 'favicon.html' %}
+  {% render_bundle 'storefront' 'css' attrs='async' %}
+
+  {% block stylesheet %}{% endblock stylesheet %}
+
+  {% block meta_tags %}
+    <meta property="og:title" content="{{ site.settings.translated.header_text }}">
+    <meta property="og:description" content="{{ site.settings.translated.description }}">
+    <meta name="description" content="{{ site.settings.translated.description }}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% static "images/block1.png" %}">
+  {% endblock meta_tags %}
+
+  <link rel="manifest" href="{% url "manifest" %}" />
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+{% block header %}
+  <header class="navbar" role="navigation">
+    <div class="navbar__login container-fluid {% if user.is_impersonate %} bg-warning{% endif %}">
+      <div class=" d-none d-md-block container">
+      <div class="row">
+        <div class="col-6">
+          <!--<p class="text-left">{{ site.settings.translated.header_text }}</p>-->
+          <p class="text-left">NoQ - End your waiting in long queues</p>
+        </div>
+        <div class="col-6">
+          <ul class="float-right">
+            {% get_available_languages as LANGUAGES %}
+
+            {# We display language picker only if there're languages to pick from #}
+            {% if LANGUAGES|length > 1 %}
+              {% get_current_language as LANGUAGE_CODE %}
+              <li>
+                <div class="language-picker dropdown show">
+                  <a class="dropdown-toggle dropdown-link " id="language-picker-button">
+                    {{ LANGUAGE_CODE|language_name_local }}
                   </a>
+                  {% include "_language_picker.html" %}
+                </div>
+              </li>
+            {% endif %}
+            {% if user.is_authenticated %}
+              {% if user.is_staff or request.impersonator.is_staff %}
+                <li>
+                  <a href="{% url "dashboard:index" %}" target="_blank" rel="noopener">
+                    {% trans "Dashboard" context "Main navigation item" %}
+                  </a>
+                </li>
+              {% endif %}
+              {% if user.is_seller or request.impersonator.is_seller %}
+                <li>
+                  <a href="{% url "seller:details" %}">
+                    {% trans "Your account" context "Main navigation item" %}
+                  </a>
+                </li>
+              {% else %}
+              {% else %}
+              <li>
+                <a href="{% url "account:details" %}">
+                  {% trans "Your account" context "Main navigation item" %}</a>
+              </li>
+              {% endif %}
+              {% if user.is_impersonate %}
+                <li>
+                  <a href="{% url "impersonate-stop" %}">
+                    {% trans 'Stop impersonating' context 'Main navigation item' %}
+                  </a>
+                </li>
+              {% else %}
+                <li>
+                  <a href="{% url "account:logout" %}">
+                    {% trans "Log out" context "Main navigation item" %}</a>
+                </li>
+              {% endif %}
+            {% else %}
+              <li>
+                <a rel="nofollow" href="{% url "account:signup" %}">
+                  {% trans "Register" context "Main navigation item" %}</a>
+              </li>
+              <li>
+                <a rel="nofollow" href="{% url "account:login" %}">
+                  {% trans "Log in" context "Main navigation item" %}
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="navbar__brand container-fluid d-block">
+      <div class="container">
+        <div class="row no-gutters">
+          <div class="col-8 col-md-4 navbar__logo">
+            <div class="menu-icon-mobile d-md-none navbar__brand__menu-toggle closed open">
+              <svg data-src="{% static "images/mobile-menu.svg" %}" width="28px" height="20px"/>
+            </div>
+            <a href="{% url 'home' %}">
+              <svg data-src="{% static "images/logo-document.svg" %}" style='width:"300pt";height:"200pt"'/>
+            </a>
+          </div>
+          <div class="col-2 col-md-5 navbar__search static">
+
+          </div>
+          <div class="col-2 col-md-3">
+            <div class="navbar__brand__cart float-right">
+              <a rel="nofollow" class="cart__icon" href="{% url "cart:index" %}">
+                <span class="cart-label d-none d-md-inline-block">
+                  {% trans "Your Cart" context "Main navigation item" %}
+                </span>
+                <div class="navbar__brand__cart__icon">
+                  <svg data-src="{% static "images/cart.svg" %}" width="24" height="24"/>
+                </div>
+                <span class="badge {% if not cart_counter %}empty{% endif %}">
+                  {% if cart_counter %}
+                    {{ cart_counter }}
+                  {% else %}
+                    0
+                  {% endif %}
+                </span>
+              </a>
+              <div class="cart-dropdown d-none">
+                {% include 'cart_dropdown.html' %}
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 home__block2">
-        <div class="home--square">
-          <div class="home--content">
-            <div class="home--content-wrapper">
-              <div class="home--content-inner">
-                <h1>{% trans "Size & Colours" context "Homepage title" %}</h1>
-                <a class="btn btn-secondary home__button" href="#">{% trans "Shop now" context "Homepage action" %}</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-6 home__block3">
-        <div class="home--square">
-          <div class="home--content">
-            <div class="home--content-wrapper">
-              <div class="home--content-inner">
-                <h1>{% trans "Digital Downloads" context "Homepage title" %}</h1>
-                <a class="btn btn-secondary home__button" href="#">{% trans "Shop now" context "Homepage action" %}</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="navbar__menu container d-block">
+      <!--<nav class="navigation">-->
+        <!--{% menu site_menu=site.settings.top_menu horizontal=True %}-->
+      <!--</nav>-->
     </div>
-    {% if products %}
-      <div class="home__featured">
-        <h2 class="text-center">{% trans "Featured products" context "Homepage title" %}</h2>
-        <div class="row">
-          {% include "product/_items.html" %}
-        </div>
-      </div>
-    {% endif %}
-    <script type="application/ld+json">{{ webpage_schema|safe }}</script>
-  </div>
+  </header>
 {% endblock %}
+<div class="container maincontent">
+  {% block topcontent %}{% endblock topcontent %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  {% block breadcrumb %}
+  {% endblock breadcrumb %}
+  {% block content %}
+  {% endblock content %}
+
+
+  <div class="col-lg-10 col-sm-12 m-auto">
+    <div class="row login">
+      <div class="col-md-6 login__register">
+        <div class="login__register-link">
+          <h3>{% trans "Tired of waiting in long queues to get your billing done?" context "Signup form secondary title" %}</h3>
+           <img class="signup-img lazyload lazypreload" data-src="{% static 'images/billing-wait.jpg' %}"
+            srcset="{% static 'images/billing-wait.jpg' %} 1x, {% static 'images/billing-wait.jpg' %} 2x">
+        </div>
+      </div>
+      <div class="col-md-6 login__form">
+        <form method="post" action="{% url 'account:signup' %}">
+          <fieldset>
+            <h3>{% trans "Discover Super markets that Deliver near you / Pickup yourself" context "Signup form title" %}</h3>
+            {% if SEARCH_IS_ENABLED %}
+              <form class="form-inline search-form" action="{% url "search:search" %}">
+                <br/>
+                <input class="form-control" type="text" name="q"
+                       value="{% if query %}{{ query }}{% endif %}"
+                       placeholder="{% trans "Enter your delivery address" %}"
+                       required>
+                <button class="btn btn-primary narrow" type="submit">
+                  {% trans "Find Groceries" %}
+                </button>
+            {% endif %}
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-10 col-sm-12 m-auto">
+     <div class="row login">
+
+      <div class="col-md-4 p-5">
+         <div class="login__register-link">
+           <img class="signup-img lazyload lazypreload" data-src="{% static 'images/step1.jpg' %}" height=217px"
+            srcset="{% static 'images/step1.jpg' %} 1x, {% static 'images/step1.jpg' %} 2x">
+           <h2>1. Shop Online</h2>
+           <p>{% trans "Find nearby Super market and choose items" context "Signup form secondary title" %}</hr>
+        </div>
+      </div>
+      <div class="col-md-4 p-5">
+         <div class="login__register-link">
+           <img class="signup-img lazyload lazypreload" data-src="{% static 'images/step2.jpg' %}" height=217px"
+            srcset="{% static 'images/step2.jpg' %} 1x, {% static 'images/step2.jpg' %} 2x">
+           <h2>2. We Shop</h2>
+           <p>{% trans "A personal shopper gathers your groceries and packed it for you" context "Signup form secondary title" %}</hr>
+         </div>
+      </div>
+      <div class="col-md-4 p-5">
+         <div class="login__register-link">
+           <img class="signup-img lazyload lazypreload" data-src="{% static 'images/step3.jpg' %}" height=217px"
+            srcset="{% static 'images/step3.jpg' %} 1x, {% static 'images/step3.jpg' %} 2x">
+           <h2>3. Pickup / Deliver</h2>
+           <p>{% trans "Groceries can be either be picked up or get it delivered at your convenient time" context "Signup form secondary title" %}</hr>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="col-lg-10 col-sm-12 m-auto">
+    <div class="row login">
+      <div class="col-md-6 login__register">
+        <div class="login__register-link">
+          <h3>{% trans "Want to sell with us and Grow your business?" context "Signup form secondary title" %}</h3>
+           <img class="signup-img lazyload lazypreload" data-src="{% static 'images/grow-business.jpg' %}"
+            srcset="{% static 'images/grow-business.jpg' %} 1x, {% static 'images/grow-business.jpg' %} 2x">
+          <p><a rel="nofollow" href="{% url 'seller:signup' %}" class="btn secondary narrow">
+            {% trans "Register" context "Signup form secondary action" %}
+          </a></p>
+        </div>
+      </div>
+      <div class="col-md-6 login__form">
+        <form method="post" action="{% url 'account:signup' %}">
+          <fieldset>
+            <h3>{% trans "Contact us and We will get back to you" context "Signup form title" %}</h3>
+            {% if SEARCH_IS_ENABLED %}
+              <form class="form-inline search-form" action="{% url "search:search" %}">
+                <input class="form-control" type="text" name="q"
+                       value="{% if query %}{{ query }}{% endif %}"
+                       placeholder="{% trans "Enter your Email address" %}"
+                       required>
+                <button class="btn btn-primary narrow" type="submit">
+                  {% trans "Submit" %}
+                </button>
+            {% endif %}
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% block footer %}
+  <footer class="footer">
+  <div class="footer__menus">
+    <div class="container">
+      <div class="row">
+          {% footer_menu site_menu=site.settings.bottom_menu %}
+        <div class="col-md-2 col-6">
+        <ul class="menu">
+          <li class="nav-item__dropdown menu__item">
+            <a>
+              <strong>
+                {% trans "Account" %}
+              </strong>
+            </a>
+            <hr />
+            <li>
+              <a rel="nofollow" href="{% url "cart:index" %}">
+                {% trans "Your Cart" context "Main navigation item" %}
+              </a>
+            </li>
+            {% if user.is_authenticated %}
+              {% if user.is_staff %}
+                <li>
+                  <a href="{% url "dashboard:index" %}" target="_blank" rel="noopener">
+                    {% trans "Dashboard" context "Main navigation item" %}
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url "styleguide" %}" target="_blank">
+                    {% trans "Style guide" context "Main navigation item" %}
+                  </a>
+                </li>
+              {% endif %}
+              <li>
+                <a href="{% url "account:details" %}">
+                  {% trans "Your account" context "Main navigation item" %}
+                </a>
+              </li>
+              {% if user.is_impersonate %}
+                <li>
+                  <a href="{% url "impersonate-stop" %}">
+                    {% trans 'Stop impersonating' context 'Main navigation item' %}
+                  </a>
+                </li>
+              {% else %}
+                <li>
+                  <a href="{% url "account:logout" %}">
+                    {% trans "Log out" context "Main navigation item" %}</a>
+                </li>
+              {% endif %}
+            {% else %}
+              <li>
+                <a rel="nofollow" href="{% url "account:signup" %}">
+                  {% trans "Register" context "Main navigation item" %}
+                </a>
+              </li>
+              <li>
+                <a rel="nofollow" href="{% url "account:login" %}">
+                  {% trans "Log in" context "Main navigation item" %}
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+        <div class="offset-md-2 col-md-4 col-12">
+          <div class="footer__menus__social-container">
+            <div class="footer__menus__social">
+              <a target="_blank" rel="noopener" class="social-footer" href="https://www.facebook.com/mirumeelabs/">
+                <svg data-src="{% static "images/facebook-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+              <a target="_blank" rel="noopener" class="social-footer" href="https://github.com/mirumee/saleor">
+                <svg data-src="{% static "images/github-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+              <a target="_blank" rel="noopener" class="social-footer" href="https://twitter.com/getsaleor">
+                <svg data-src="{% static "images/twitter-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+              <a target="_blank" rel="noopener" class="social-footer" href="https://plus.google.com/+Mirumee">
+                <svg data-src="{% static "images/google-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+              <a target="_blank" rel="noopener" class="social-footer" href="https://www.meetup.com/Mirumee-Talks/">
+                <svg data-src="{% static "images/meetup-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+              <a target="_blank" rel="noopener" class="social-footer" href="https://linkedin.com/company/mirumee-software">
+                <svg data-src="{% static "images/linkedin-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+              <a target="_blank" rel="noopener" class="social-footer" href="https://dribbble.com/mirumee">
+                <svg data-src="{% static "images/dribbble-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+              <a target="_blank" rel="noopener" class="social-footer" href="https://www.instagram.com/explore/tags/mirumee/">
+                <svg data-src="{% static "images/instagram-logo.svg" %}" width="45px" height="45px"/>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer__copy">
+    <div class="container">
+      <div class="row">
+        <div class="col-4">
+          <a href="{% url 'home' %}" class="footer__logo float-md-left">
+            <svg data-src="{% static "images/logo-document.svg" %}"/>
+          </a>
+        </div>
+        <div class="col-8 footer__copy-text">COPYRIGHT © 2009–2019 NoQ Technologies Inc</div>
+      </div>
+    </div>
+  </div>
+  </footer>
+{% endblock %}
+{% block footer_scripts %}
+  <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+  {% render_bundle 'storefront' 'js' %}
+{% endblock footer_scripts %}
+{% if LANGUAGES|length > 1 %}
+  {% include "_language_picker_modal.html" %}
+{% endif %}
+</body>
+</html>
