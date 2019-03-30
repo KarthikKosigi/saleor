@@ -14,6 +14,7 @@ from phonenumber_field.modelfields import PhoneNumber, PhoneNumberField
 from .validators import validate_possible_number
 
 
+
 class PossiblePhoneNumberField(PhoneNumberField):
     """Less strict field for phone numbers written to database."""
 
@@ -131,6 +132,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(max_length=256, blank=True)
     addresses = models.ManyToManyField(
         Address, blank=True, related_name='user_addresses')
+
     is_staff = models.BooleanField(default=False)
     token = models.UUIDField(default=get_token, editable=False, unique=True)
     is_active = models.BooleanField(default=True)

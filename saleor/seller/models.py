@@ -41,7 +41,7 @@ class Store(SeoModel, PublishableModel):
 
     def get_absolute_url(self):
         return reverse(
-            'store:details',
+            'stores:details',
             kwargs={'slug': self.get_slug(), 'store_id': self.id})
 
     def get_slug(self):
@@ -58,7 +58,7 @@ class StoreImage(SortableModel):
 
     class Meta:
         ordering = ('sort_order', )
-        app_label = 'store'
+        app_label = 'stores'
 
     def get_ordering_queryset(self):
         return self.store.images.all()

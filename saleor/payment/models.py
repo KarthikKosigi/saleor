@@ -162,7 +162,7 @@ class Payment(models.Model):
 class Transaction(models.Model):
     """Represents a single payment operation.
 
-    Transaction is an attempt to transfer money between your store
+    Transaction is an attempt to transfer money between your stores
     and your customers, with a chosen payment method.
     """
 

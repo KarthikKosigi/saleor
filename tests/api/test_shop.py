@@ -296,7 +296,7 @@ def test_shop_domain_update(staff_api_client, permission_manage_settings):
             }
         }
     """
-    new_name = 'saleor test store'
+    new_name = 'saleor test stores'
     variables = {
         'input': {
             'domain': 'lorem-ipsum.com',

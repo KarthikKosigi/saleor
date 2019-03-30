@@ -376,7 +376,7 @@ class FulfillmentLine(models.Model):
 
 
 class OrderEvent(models.Model):
-    """Model used to store events that happened during the order lifecycle.
+    """Model used to stores events that happened during the order lifecycle.
 
         Args:
             parameters: Values needed to display the event on the storefront

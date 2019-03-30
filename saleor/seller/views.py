@@ -12,6 +12,8 @@ from django.views.decorators.http import require_POST
 
 from ..checkout.utils import find_and_assign_anonymous_cart
 from ..core.utils import get_paginator_items
+from ..account.models import User
+from ..seller.models import Store
 from .forms import (
     ChangePasswordForm, LoginForm, NameForm, PasswordResetForm, SignupForm, StoreForm,
     get_address_form, logout_on_password_change)
@@ -38,7 +40,12 @@ def get_or_process_name_form(request):
 def get_or_process_store_form(request):
     form = StoreForm(data=request.POST or None, instance=request.user)
     if form.is_valid():
-        form.save()
+        store = form.save(commit=False)
+
+        store,created = Store.objects.get_or_create(owner_id=request.user.id)
+        store.description = form.cleaned_data.get('description')
+        store.name = form.cleaned_data.get('name')
+        store.save()
         messages.success(request, pgettext(
             'Storefront message', 'Store details successfully updated.'))
     return form

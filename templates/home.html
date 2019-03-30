@@ -87,7 +87,6 @@
                   </a>
                 </li>
               {% else %}
-              {% else %}
               <li>
                 <a href="{% url "account:details" %}">
                   {% trans "Your account" context "Main navigation item" %}</a>
@@ -193,11 +192,11 @@
         </div>
       </div>
       <div class="col-md-6 login__form">
-        <form method="post" action="{% url 'account:signup' %}">
+        <form method="get" action="{% url 'stores:stores' %}">
           <fieldset>
             <h3>{% trans "Discover Super markets that Deliver near you / Pickup yourself" context "Signup form title" %}</h3>
             {% if SEARCH_IS_ENABLED %}
-              <form class="form-inline search-form" action="{% url "search:search" %}">
+              <form class="form-inline search-form">
                 <br/>
                 <input class="form-control" type="text" name="q"
                        value="{% if query %}{{ query }}{% endif %}"

@@ -6,6 +6,7 @@ from django.shortcuts import render
 from ..product.utils import products_with_details
 from ..product.utils.availability import products_with_availability
 from .forms import SearchForm
+from ..seller.models import Store
 
 
 def paginate_results(results, get_data, paginate_by=settings.PAGINATE_BY):
@@ -19,6 +20,12 @@ def paginate_results(results, get_data, paginate_by=settings.PAGINATE_BY):
 
 
 def evaluate_search_query(form, request):
+    results = products_with_details(request.user) & form.search()
+    return products_with_availability(
+        results, discounts=request.discounts, taxes=request.taxes,
+        local_currency=request.currency)
+
+def evaluate_store_query(form, request):
     results = products_with_details(request.user) & form.search()
     return products_with_availability(
         results, discounts=request.discounts, taxes=request.taxes,
@@ -47,12 +54,12 @@ def stores(request):
     form = SearchForm(data=request.GET or None)
     if form.is_valid():
         query = form.cleaned_data.get('q', '')
-        results = evaluate_search_query(form, request)
+        results = Store.objects.all()
     else:
         query, results = '', []
     page = paginate_results(list(results), request.GET)
     ctx = {
         'query': query,
-        'results': page,
+        'results': Store.objects.all(),
         'query_string': '?q=%s' % query}
-    return render(request, 'search/results.html', ctx)
+    return render(request, 'stores/results.html', ctx)

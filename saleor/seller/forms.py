@@ -105,6 +105,8 @@ class SignupForm(forms.ModelForm, FormWithReCaptcha):
         user.is_seller = True
         if commit:
             user.save()
+            store = Store.objects.create(name='Sampoorna', description="Best super market", owner=user)
+            store.save()
         return user
 
 
@@ -148,10 +150,3 @@ class StoreForm(forms.ModelForm):
                 'Seller form: Name field', 'Name'),
             'description': pgettext_lazy(
                 'Seller form: Description field', 'Description')}
-
-        def save(self, request=None, commit=True):
-            store = super().save(commit=False)
-            store.owner = request.user
-            if commit:
-                store.save()
-            return store

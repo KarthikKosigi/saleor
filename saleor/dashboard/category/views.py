@@ -13,12 +13,14 @@ from ..menu.utils import get_menus_that_needs_update, update_menus
 from ..views import staff_member_required
 from .filters import CategoryFilter
 from .forms import CategoryForm
+from ...seller.models import Store
 
 
 @staff_member_required
 @permission_required('product.manage_products')
 def category_list(request):
-    categories = Category.tree.root_nodes().order_by('name')
+    storeid = Store.objects.get(owner_id = request.user.id)
+    categories = Category.tree.root_nodes().order_by('name').filter(store_id = storeid)
     category_filter = CategoryFilter(request.GET, queryset=categories)
     categories = get_paginator_items(
         category_filter.qs, settings.DASHBOARD_PAGINATE_BY,
@@ -41,6 +43,9 @@ def category_create(request, root_pk=None):
         request.POST or None, request.FILES or None, parent_pk=root_pk)
     if form.is_valid():
         category = form.save()
+        store = Store.objects.get(owner=request.user)
+        category.store = store
+        category.save()
         messages.success(
             request,
             pgettext_lazy(

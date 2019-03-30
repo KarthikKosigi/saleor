@@ -29,7 +29,7 @@ class Menu(CountableDjangoObjectType):
 
     class Meta:
         description = dedent("""Represents a single menu - an object that is used
-        to help navigate through the store.""")
+        to help navigate through the stores.""")
         interfaces = [relay.Node]
         exclude_fields = ['json_content']
         model = models.Menu
@@ -57,7 +57,7 @@ class MenuItem(CountableDjangoObjectType):
 
     class Meta:
         description = dedent("""Represents a single item of the related menu.
-        Can store categories, collection or pages.""")
+        Can stores categories, collection or pages.""")
         interfaces = [relay.Node]
         exclude_fields = [
             'sort_order', 'lft', 'rght', 'tree_id', 'translations']

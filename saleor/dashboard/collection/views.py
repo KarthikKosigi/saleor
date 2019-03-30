@@ -14,6 +14,7 @@ from ..menu.utils import get_menus_that_needs_update, update_menus
 from ..views import staff_member_required
 from .filters import CollectionFilter
 from .forms import AssignHomepageCollectionForm, CollectionForm
+from ...seller.models import Store
 
 
 @staff_member_required
@@ -48,7 +49,10 @@ def collection_create(request):
     form = CollectionForm(
         request.POST or None, request.FILES or None, instance=collection)
     if form.is_valid():
-        form.save()
+        collection = form.save()
+        store = Store.objects.get(owner=request.user)
+        collection.store = store
+        collection.save()
         msg = pgettext_lazy('Collection message', 'Added collection')
         messages.success(request, msg)
         return redirect('dashboard:collection-list')

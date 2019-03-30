@@ -26,6 +26,7 @@ from ..core.utils.translations import TranslationProxy
 from ..core.weight import WeightUnits, zero_weight
 from ..discount.utils import calculate_discounted_price
 from ..seo.models import SeoModel, SeoModelTranslation
+from ..seller.models import Store
 
 
 class Category(MPTTModel, SeoModel):
@@ -33,6 +34,8 @@ class Category(MPTTModel, SeoModel):
     slug = models.SlugField(max_length=128)
     description = models.TextField(blank=True)
     description_json = JSONField(blank=True, default=dict)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='stores', on_delete=models.CASCADE)
     parent = models.ForeignKey(
         'self', null=True, blank=True, related_name='children',
         on_delete=models.CASCADE)
@@ -423,6 +426,8 @@ class Collection(SeoModel, PublishableModel):
     background_image_alt = models.CharField(max_length=128, blank=True)
     description = models.TextField(blank=True)
     description_json = JSONField(blank=True, default=dict)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='collection_stores', on_delete=models.CASCADE)
 
     translated = TranslationProxy()
 
