@@ -24,12 +24,12 @@ from ..core.models import PublishableModel, SortableModel
 from ..core.utils.taxes import DEFAULT_TAX_RATE_NAME, apply_tax_to_price
 from ..core.utils.translations import TranslationProxy
 from ..core.weight import WeightUnits, zero_weight
-from ..discount.utils import calculate_discounted_price
 from ..seo.models import SeoModel, SeoModelTranslation
 
 
 class Store(SeoModel, PublishableModel):
     name = models.CharField(max_length=128)
+    slug = models.SlugField(max_length=128)
     description = models.TextField()
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owner',
@@ -43,6 +43,11 @@ class Store(SeoModel, PublishableModel):
         return reverse(
             'stores:details',
             kwargs={'slug': self.get_slug(), 'store_id': self.id})
+
+    def get_first_image(self):
+        # images = list(self.images.all())
+        # return images[0] if images else None
+        return "images/" + self.name +".jpg"
 
     def get_slug(self):
         return slugify(smart_text(unidecode(self.name)))

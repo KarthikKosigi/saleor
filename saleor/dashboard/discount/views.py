@@ -15,6 +15,7 @@ from ...discount.models import Sale, Voucher
 from ..views import staff_member_required
 from . import forms
 from .filters import SaleFilter, VoucherFilter
+from ...seller.models import Store
 
 
 def get_voucher_type_forms(voucher, data):
@@ -35,7 +36,8 @@ def get_voucher_type_forms(voucher, data):
 @staff_member_required
 @permission_required('discount.manage_discounts')
 def sale_list(request):
-    sales = Sale.objects.prefetch_related('products').order_by('name')
+    storeid = Store.objects.get(owner_id = request.user.id)
+    sales = Sale.objects.filter(store_id = storeid).prefetch_related('products').order_by('name')
     sale_filter = SaleFilter(request.GET, queryset=sales)
     sales = get_paginator_items(
         sale_filter.qs, settings.DASHBOARD_PAGINATE_BY,
@@ -53,6 +55,9 @@ def sale_add(request):
     form = forms.SaleForm(request.POST or None, instance=sale)
     if form.is_valid():
         sale = form.save()
+        store = Store.objects.get(owner=request.user)
+        sale.store = store
+        sale.save()
         msg = pgettext_lazy('Sale (discount) message', 'Added sale')
         messages.success(request, msg)
         return redirect('dashboard:sale-update', pk=sale.pk)
@@ -92,7 +97,8 @@ def sale_delete(request, pk):
 @staff_member_required
 @permission_required('discount.manage_discounts')
 def voucher_list(request):
-    vouchers = (Voucher.objects.prefetch_related('products', 'collections')
+    storeid = Store.objects.get(owner_id = request.user.id)
+    vouchers = (Voucher.objects.filter(store_id = storeid).prefetch_related('products', 'collections')
                 .order_by('name'))
     voucher_filter = VoucherFilter(request.GET, queryset=vouchers)
     vouchers = get_paginator_items(
@@ -119,6 +125,10 @@ def voucher_add(request):
             voucher = voucher_form.save()
         elif form_type.is_valid():
             voucher = form_type.save()
+            store = Store.objects.get(owner=request.user)
+            voucher.store = store
+            voucher.save()
+            
 
         if form_type is None or form_type.is_valid():
             msg = pgettext_lazy('Voucher message', 'Added voucher')

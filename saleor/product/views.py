@@ -18,6 +18,7 @@ from .utils import (
 from .utils.attributes import get_product_attributes_data
 from .utils.availability import get_availability
 from .utils.variants_picker import get_variant_picker_data
+from ..seller.models import Store
 
 
 def product_details(request, slug, product_id, form=None):
@@ -69,11 +70,13 @@ def product_details(request, slug, product_id, form=None):
     # show_variant_picker determines if variant picker is used or select input
     show_variant_picker = all([v.attributes for v in product.variants.all()])
     json_ld_data = product_json_ld(product, product_attributes)
+    store = Store.objects.get(id = product.store_id)
     ctx = {
         'is_visible': is_visible,
         'form': form,
         'availability': availability,
         'product': product,
+        'store':store,
         'product_attributes': product_attributes,
         'product_images': product_images,
         'show_variant_picker': show_variant_picker,
@@ -126,7 +129,8 @@ def category_index(request, slug, category_id):
     product_filter = ProductCategoryFilter(
         request.GET, queryset=products, category=category)
     ctx = get_product_list_context(request, product_filter)
-    ctx.update({'object': category})
+    store = Store.objects.get(id = category.store_id)
+    ctx.update({'object': category , 'store':store})
     return TemplateResponse(request, 'category/index.html', ctx)
 
 

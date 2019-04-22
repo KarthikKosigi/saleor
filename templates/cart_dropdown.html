@@ -7,6 +7,7 @@
 <div class="container">
   {% if quantity > 0 %}
     <div id="cart-dropdown-list" class="cart-dropdown__list{% if lines|length <= 2 %} overflow{% endif %}">
+    <h3 class="text-center"><a href="{{store.get_absolute_url}}">{{store.name}}</a></h3>
     {% for line in lines %}
       <div class="row item">
         <div class="col-md-10">

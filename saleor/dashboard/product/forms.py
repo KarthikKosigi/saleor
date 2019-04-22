@@ -47,15 +47,21 @@ class RichTextField(forms.CharField):
             value, tags=tags, attributes=attributes, styles=styles)
         return value
 
+def get_product_type_selector_form(store_id):
+    class ProductTypeSelectorForm(forms.Form):
+        product_type = forms.ModelChoiceField(
+            queryset=ProductType.objects.filter(store_id=store_id),
+            label=pgettext_lazy('Product type form label', 'Product type'),
+            widget=forms.RadioSelect, empty_label=None)
+    return ProductTypeSelectorForm
+
 
 class ProductTypeSelectorForm(forms.Form):
-    """Form that allows selecting product type."""
-
     product_type = forms.ModelChoiceField(
         queryset=ProductType.objects.all(),
         label=pgettext_lazy('Product type form label', 'Product type'),
         widget=forms.RadioSelect, empty_label=None)
-
+    
 
 def get_tax_rate_type_choices():
     rate_types = get_tax_rate_types() + [DEFAULT_TAX_RATE_NAME]

@@ -45,6 +45,7 @@ def get_or_process_store_form(request):
         store,created = Store.objects.get_or_create(owner_id=request.user.id)
         store.description = form.cleaned_data.get('description')
         store.name = form.cleaned_data.get('name')
+        store.slug = slugify(unidecode(form.cleaned_data.get('name')))
         store.save()
         messages.success(request, pgettext(
             'Storefront message', 'Store details successfully updated.'))

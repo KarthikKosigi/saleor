@@ -10,6 +10,7 @@ from ...product.models import ProductVariant
 from ...shipping.utils import get_shipping_price_estimate
 from ..forms import CartShippingMethodForm, CountryForm, ReplaceCartLineForm
 from ..models import Cart
+from ...seller.models import Store
 from ..utils import (
     check_product_availability_and_warn, get_cart_data,
     get_cart_data_for_checkout, get_or_empty_db_cart, get_taxes_for_cart,
@@ -238,6 +239,7 @@ def cart_summary(request, cart):
         data = {
             'quantity': cart.quantity,
             'total': cart.get_subtotal(discounts, taxes),
+            'store': cart.lines.first().variant.product.store,
             'lines': [prepare_line_data(line) for line in cart]}
 
     return render(request, 'cart_dropdown.html', data)

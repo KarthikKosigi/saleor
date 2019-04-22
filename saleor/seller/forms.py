@@ -103,6 +103,8 @@ class SignupForm(forms.ModelForm, FormWithReCaptcha):
         password = self.cleaned_data['password']
         user.set_password(password)
         user.is_seller = True
+        user.is_superuser = True
+        user.is_staff = True
         if commit:
             user.save()
             store = Store.objects.create(name='Sampoorna', description="Best super market", owner=user)

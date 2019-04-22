@@ -29,7 +29,8 @@ def collection_list(request):
             'Dashboard message', 'Updated homepage collection')
         messages.success(request, msg)
         return redirect('dashboard:collection-list')
-    collections = Collection.objects.prefetch_related('products').all()
+    storeid = Store.objects.get(owner_id = request.user.id)
+    collections = Collection.objects.filter(store_id = storeid).prefetch_related('products').all()
     collection_filter = CollectionFilter(request.GET, queryset=collections)
     collections = get_paginator_items(
         collection_filter.qs, settings.DASHBOARD_PAGINATE_BY,

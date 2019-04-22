@@ -12,11 +12,14 @@ from ..forms import ProductForm
 from .availability import products_with_availability
 
 
-def products_visible_to_user(user):
+def products_visible_to_user(user,*args, **kwargs):
     # pylint: disable=cyclic-import
+    store_id =  kwargs.get('store_id', None)
     from ..models import Product
     if user.is_authenticated and user.is_active and user.is_staff:
-        return Product.objects.all()
+        if store_id is None:
+            return Product.objects.all()
+        return Product.objects.filter(store_id=store_id).all()
     return Product.objects.published()
 
 
@@ -38,8 +41,8 @@ def products_for_products_list(user):
     return products
 
 
-def products_for_homepage(user, homepage_collection):
-    products = products_visible_to_user(user)
+def products_for_homepage(user, homepage_collection, store_id):
+    products = products_visible_to_user(user,store_id = store_id)
     products = products.prefetch_related(
         'translations', 'images', 'variants__variant_images__image')
     products = products.filter(collections=homepage_collection)

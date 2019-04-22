@@ -21,12 +21,14 @@ from ...product.utils.costs import (
 from ..views import staff_member_required
 from . import forms
 from .filters import AttributeFilter, ProductFilter, ProductTypeFilter
+from ...seller.models import Store
 
 
 @staff_member_required
 @permission_required('product.manage_products')
 def product_list(request):
-    products = Product.objects.prefetch_related('images')
+    storeid = Store.objects.get(owner_id = request.user.id)
+    products = Product.objects.filter(store_id = storeid).prefetch_related('images')
     products = products.order_by('name')
     product_types = ProductType.objects.all()
     product_filter = ProductFilter(request.GET, queryset=products)
@@ -83,7 +85,8 @@ def product_toggle_is_published(request, pk):
 @permission_required('product.manage_products')
 def product_select_type(request):
     """View for add product modal embedded in the product list view."""
-    form = forms.ProductTypeSelectorForm(request.POST or None)
+    store_id = Store.objects.get(owner_id = request.user.id)
+    form = forms.get_product_type_selector_form(store_id)(request.POST or None)
     status = 200
     if form.is_valid():
         redirect_url = reverse(
@@ -121,6 +124,9 @@ def product_create(request, type_pk):
 
     if product_form.is_valid() and not variant_errors:
         product = product_form.save()
+        store = Store.objects.get(owner=request.user)
+        product.store = store
+        product.save()
         if create_variant:
             variant.product = product
             variant_form.save()
@@ -203,10 +209,11 @@ def ajax_products_list(request):
 
     Response format is that of a Select2 JS widget.
     """
+    storeid = Store.objects.get(owner_id = request.user.id)
     queryset = (
-        Product.objects.all()
+        Product.objects.filter(store_id = storeid).all()
         if request.user.has_perm('product.manage_products')
-        else Product.objects.published())
+        else Product.objects.filter(store_id = storeid).published())
     search_query = request.GET.get('q', '')
     if search_query:
         queryset = queryset.filter(Q(name__icontains=search_query))
@@ -218,7 +225,8 @@ def ajax_products_list(request):
 @staff_member_required
 @permission_required('product.manage_products')
 def product_type_list(request):
-    types = ProductType.objects.all().prefetch_related(
+    storeid = Store.objects.get(owner_id = request.user.id)
+    types = ProductType.objects.filter(store_id = storeid).all().prefetch_related(
         'product_attributes', 'variant_attributes').order_by('name')
     type_filter = ProductTypeFilter(request.GET, queryset=types)
     types = get_paginator_items(
@@ -243,6 +251,9 @@ def product_type_create(request):
     form = forms.ProductTypeForm(request.POST or None, instance=product_type)
     if form.is_valid():
         product_type = form.save()
+        store = Store.objects.get(owner=request.user)
+        product_type.store = store
+        product_type.save()
         msg = pgettext_lazy(
             'Dashboard message', 'Added product type %s') % (product_type,)
         messages.success(request, msg)

@@ -8,11 +8,13 @@ from ..core.models import SortableModel
 from ..core.utils.translations import TranslationProxy
 from ..page.models import Page
 from ..product.models import Category, Collection
-
+from ..seller.models import Store
 
 class Menu(models.Model):
     name = models.CharField(max_length=128)
     json_content = JSONField(blank=True, default=dict)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='menu', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('pk', )

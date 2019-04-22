@@ -9,6 +9,7 @@ from ..order.models import Order
 from ..payment import ChargeStatus
 from ..payment.models import Payment
 from ..product.models import Product
+from ..seller.models import Store
 
 
 def staff_member_required(f):
@@ -34,15 +35,17 @@ def superuser_required(
 @staff_member_required
 def index(request):
     paginate_by = 10
-    orders_to_ship = Order.objects.ready_to_fulfill().select_related(
+    store = Store.objects.get(owner_id = request.user.id)
+    orders_to_ship = Order.objects.filter(store_id = store).ready_to_fulfill().select_related(
         'user').prefetch_related('lines', 'payments')
-    payments = Payment.objects.filter(
+    payments = Payment.objects.filter(order__store=store,
         is_active=True, charge_status=ChargeStatus.NOT_CHARGED
     ).order_by('-created')
     payments = payments.select_related('order', 'order__user')
-    low_stock = get_low_stock_products()
+    low_stock = get_low_stock_products(store)
     ctx = {'preauthorized_payments': payments[:paginate_by],
            'orders_to_ship': orders_to_ship[:paginate_by],
+           'store': store,
            'low_stock': low_stock[:paginate_by]}
     return TemplateResponse(request, 'dashboard/index.html', ctx)
 
@@ -52,8 +55,8 @@ def styleguide(request):
     return TemplateResponse(request, 'dashboard/styleguide/index.html', {})
 
 
-def get_low_stock_products():
+def get_low_stock_products(store):
     threshold = getattr(settings, 'LOW_STOCK_THRESHOLD', 10)
-    products = Product.objects.annotate(
+    products = Product.objects.filter(store_id = store).annotate(
         total_stock=Sum('variants__quantity'))
     return products.filter(Q(total_stock__lte=threshold)).distinct()

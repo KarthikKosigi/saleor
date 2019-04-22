@@ -69,4 +69,12 @@
       margin: $global-margin * 2 0;
     }
   }
+  &__supermarket {
+    background-image: url('../images/supermarket.jpg');
+      @include media-breakpoint-up(md) {
+        &:before {
+          padding-top: 50%;
+        }
+      }
+  }
 }

@@ -36,12 +36,14 @@ from .forms import (
 from .utils import (
     create_invoice_pdf, create_packing_slip_pdf, get_statics_absolute_url,
     save_address_in_order)
+from ...seller.models import Store
 
 
 @staff_member_required
 @permission_required('order.manage_orders')
 def order_list(request):
-    orders = Order.objects.prefetch_related('payments', 'lines', 'user')
+    storeid = Store.objects.get(owner_id = request.user.id)
+    orders = Order.objects.filter(store_id = storeid).prefetch_related('payments', 'lines', 'user')
     order_filter = OrderFilter(request.GET, queryset=orders)
     orders = get_paginator_items(
         order_filter.qs, settings.DASHBOARD_PAGINATE_BY,

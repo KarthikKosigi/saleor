@@ -73,7 +73,7 @@
               </li>
             {% endif %}
             {% if user.is_authenticated %}
-              {% if user.is_staff or request.impersonator.is_staff %}
+              {% if user.is_staff or request.impersonator.is_staff or user.is_seller%}
                 <li>
                   <a href="{% url "dashboard:index" %}" target="_blank" rel="noopener">
                     {% trans "Dashboard" context "Main navigation item" %}

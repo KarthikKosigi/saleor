@@ -45,6 +45,9 @@
         {% trans "Home" context "Main navigation item" %}
       </a>
     </li>
+    <li>
+      <a href="{{store.get_absolute_url}}">{{store.name}}</a>
+    </li>
     {% if product.category %}
       <li>
         <a href="{{ product.category.get_absolute_url }}">{{ product.category.translated }}</a>

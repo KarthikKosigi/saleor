@@ -35,7 +35,7 @@ class Category(MPTTModel, SeoModel):
     description = models.TextField(blank=True)
     description_json = JSONField(blank=True, default=dict)
     store = models.ForeignKey(
-        Store, null=True, blank=True, related_name='stores', on_delete=models.CASCADE)
+        Store, null=True, blank=True, related_name='categories', on_delete=models.CASCADE)
     parent = models.ForeignKey(
         'self', null=True, blank=True, related_name='children',
         on_delete=models.CASCADE)
@@ -83,6 +83,8 @@ class ProductType(models.Model):
     tax_rate = models.CharField(
         max_length=128, default=DEFAULT_TAX_RATE_NAME,
         choices=TaxRateType.CHOICES)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='product_types', on_delete=models.CASCADE)
     weight = MeasurementField(
         measurement=Weight, unit_choices=WeightUnits.CHOICES,
         default=zero_weight)
@@ -105,6 +107,8 @@ class Product(SeoModel, PublishableModel):
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True)
     description_json = JSONField(blank=True, default=dict)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='products', on_delete=models.CASCADE)
     category = models.ForeignKey(
         Category, related_name='products', on_delete=models.CASCADE)
     price = MoneyField(
@@ -427,7 +431,7 @@ class Collection(SeoModel, PublishableModel):
     description = models.TextField(blank=True)
     description_json = JSONField(blank=True, default=dict)
     store = models.ForeignKey(
-        Store, null=True, blank=True, related_name='collection_stores', on_delete=models.CASCADE)
+        Store, null=True, blank=True, related_name='collections', on_delete=models.CASCADE)
 
     translated = TranslationProxy()
 

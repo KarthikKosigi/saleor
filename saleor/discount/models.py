@@ -14,6 +14,9 @@ from prices import Money, fixed_discount, percentage_discount
 from ..core.utils.translations import TranslationProxy
 from . import DiscountValueType, VoucherType
 
+from ..seller.models import Store
+
+
 
 class NotApplicable(ValueError):
     """Exception raised when a discount is not applicable to a checkout.
@@ -63,6 +66,8 @@ class Voucher(models.Model):
     products = models.ManyToManyField('product.Product', blank=True)
     collections = models.ManyToManyField('product.Collection', blank=True)
     categories = models.ManyToManyField('product.Category', blank=True)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='vouchers', on_delete=models.CASCADE)
 
     objects = VoucherQueryset.as_manager()
     translated = TranslationProxy()
@@ -170,6 +175,8 @@ class Sale(models.Model):
     collections = models.ManyToManyField('product.Collection', blank=True)
     start_date = models.DateField(default=date.today)
     end_date = models.DateField(null=True, blank=True)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='sales', on_delete=models.CASCADE)
 
     objects = SaleQueryset.as_manager()
 

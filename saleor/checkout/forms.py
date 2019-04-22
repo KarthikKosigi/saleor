@@ -46,6 +46,8 @@ class AddToCartForm(forms.Form):
             'Sorry. This product is currently out of stock.'),
         'variant-does-not-exists': pgettext_lazy(
             'Add to cart form error', 'Oops. We could not find that product.'),
+        'product-should-be-from-same-store': pgettext_lazy(
+            'Add to cart form error', 'Products should be added from same store.'),
         'insufficient-stock': npgettext_lazy(
             'Add to cart form error',
             'Only %d remaining in stock.', 'Only %d remaining in stock.')}
@@ -57,6 +59,11 @@ class AddToCartForm(forms.Form):
         self.taxes = kwargs.pop('taxes', {})
         super().__init__(*args, **kwargs)
 
+    def is_product_from_same_store(self):
+        if self.cart.lines.exists():
+            return self.cart.lines.first().variant.product.store.id == self.product.store.id
+        return True
+
     def clean(self):
         """Clean the form.
 
@@ -65,6 +72,10 @@ class AddToCartForm(forms.Form):
         """
         cleaned_data = super().clean()
         quantity = cleaned_data.get('quantity')
+        if not self.is_product_from_same_store():
+            msg = self.error_messages['product-should-be-from-same-store']
+            self.add_error('quantity', msg)
+            return cleaned_data
         if quantity is None:
             return cleaned_data
         try:

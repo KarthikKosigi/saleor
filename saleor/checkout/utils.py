@@ -868,7 +868,8 @@ def create_order(cart: Cart, tracking_code: str, discounts, taxes):
         'tracking_client_id': tracking_code,
         'total': cart.get_total(discounts, taxes)})
 
-    order = Order.objects.create(**order_data, checkout_token=cart.token)
+    order = Order.objects.create(**order_data, checkout_token=cart.token, 
+    store=cart.lines.first().variant.product.store)
 
     # create order lines from cart lines
     for line in cart:

@@ -6,10 +6,10 @@
       <div class="text-center">
         <div>
           <div class="product-image">
-            <img src="{% static "images/sampoorna.png" %}"/>
+            <img src="{% static store.get_first_image %}"/>
           </div>
           <h3 class="product-list-item-name" title="{{ product.translated }}">{{ store.name }}</h3>
-           <span class="product-list-item-name" title="{{ product.translated }}">{{ store.description }}</span>
+           <!-- <span class="product-list-item-name" title="{{ product.translated }}">{{ store.description }}</span> -->
         </div>
       </div>
     </a>

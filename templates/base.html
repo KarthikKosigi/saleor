@@ -53,7 +53,8 @@
       <div class=" d-none d-md-block container">
       <div class="row">
         <div class="col-6">
-          <p class="text-left">{{ site.settings.translated.header_text }}</p>
+          <!-- <p class="text-left">{{ site.settings.translated.header_text }}</p> -->
+          <p class="text-left">NoQ - End your waiting in long queues</p>
         </div>
         <div class="col-6">
           <ul class="float-right">
@@ -72,7 +73,7 @@
               </li>
             {% endif %}
             {% if user.is_authenticated %}
-              {% if user.is_staff or request.impersonator.is_staff %}
+              {% if user.is_staff or request.impersonator.is_staff or user.is_seller%}
                 <li>
                   <a href="{% url "dashboard:index" %}" target="_blank" rel="noopener">
                     {% trans "Dashboard" context "Main navigation item" %}
@@ -140,7 +141,7 @@
                   <svg data-src="{% static "images/close.svg" %}" width="30" height="30"/>
                 </div>
                 <input class="form-control" type="text" name="q"
-                       value="{% if query %}{{ query }}{% endif %}"
+                       
                        placeholder="{% trans "Enter your delivery address" %}"
                        required>
                 <button class="btn btn-primary" type="submit">

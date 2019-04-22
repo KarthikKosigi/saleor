@@ -16,12 +16,14 @@ from ..views import staff_member_required
 from .filters import MenuFilter, MenuItemFilter
 from .forms import AssignMenuForm, MenuForm, MenuItemForm, ReorderMenuItemsForm
 from .utils import get_menu_obj_text, update_menu
+from ...seller.models import Store
 
 
 @staff_member_required
 @permission_required('menu.manage_menus')
 def menu_list(request):
-    menus = Menu.objects.all()
+    storeid = Store.objects.get(owner_id = request.user.id)
+    menus = Menu.objects.filter(store_id = storeid)
     menu_filter = MenuFilter(request.GET, queryset=menus)
     menus = get_paginator_items(
         menu_filter.qs, settings.DASHBOARD_PAGINATE_BY,
@@ -50,6 +52,9 @@ def menu_create(request):
     form = MenuForm(request.POST or None, instance=menu)
     if form.is_valid():
         menu = form.save()
+        store = Store.objects.get(owner=request.user)
+        menu.store = store
+        menu.save()
         msg = pgettext_lazy('Dashboard message', 'Added menu %s') % (menu,)
         messages.success(request, msg)
         return redirect('dashboard:menu-list')

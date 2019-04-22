@@ -23,6 +23,7 @@ from ..discount.models import Voucher
 from ..payment import ChargeStatus, TransactionKind
 from ..shipping.models import ShippingMethod
 from . import FulfillmentStatus, OrderEvents, OrderStatus, display_order_event
+from ..seller.models import Store
 
 
 class OrderQueryset(models.QuerySet):
@@ -68,6 +69,8 @@ class Order(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True, related_name='orders',
         on_delete=models.SET_NULL)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='orders', on_delete=models.CASCADE)
     language_code = models.CharField(
         max_length=35, default=settings.LANGUAGE_CODE)
     tracking_client_id = models.CharField(

@@ -3,70 +3,10 @@
 {% load static %}
 {% load footer_menu menu from shop %}
 {% block content %}
-<h1>{{store.name}}</h1>
-    <h2>{{store.description}}</h2>
+{% include "stores/store_base.html" with store=store top_menu=top_menu %}
 
-    <div class="navbar__menu container d-block">
-      <nav class="navigation">
-        {% menu site_menu=site.settings.top_menu horizontal=True %}
-      </nav>
-    </div>
-
-<form class="form-inline search-form" action="{{store.get_absolute_url}}search">
-                <input class="form-control" type="text" name="q"
-                       value="{% if query %}{{ query }}{% endif %}"
-                       placeholder="{% trans "Search for product" %}"
-                       required>
-                <button class="btn btn-primary" type="submit">
-                  {% trans "Search" %} <svg data-src="{% static "images/search.svg" %}" width="18" height="18"/>
-                </button>
-              </form>
-<br/>
 
 <div class="home">
-    <div class="row">
-      <div class="col-sm-12 home__block1">
-        <div class="home--square">
-          <div class="home--content">
-            <div class="home--content-wrapper">
-              <div class="home--content-inner">
-                <h1>{% trans "Promo & Sale" context "Homepage title" %}</h1>
-                <h2>{% trans "from the Northpole" context "Homepage title" %}</h2>
-                  <a class="btn btn-secondary home__button" href="#">
-                    {% trans "Shop now" context "Homepage action" %}
-                  </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 home__block2">
-        <div class="home--square">
-          <div class="home--content">
-            <div class="home--content-wrapper">
-              <div class="home--content-inner">
-                <h1>{% trans "Size & Colours" context "Homepage title" %}</h1>
-                <a class="btn btn-secondary home__button" href="#">{% trans "Shop now" context "Homepage action" %}</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-6 home__block3">
-        <div class="home--square">
-          <div class="home--content">
-            <div class="home--content-wrapper">
-              <div class="home--content-inner">
-                <h1>{% trans "Digital Downloads" context "Homepage title" %}</h1>
-                <a class="btn btn-secondary home__button" href="#">{% trans "Shop now" context "Homepage action" %}</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     {% if products %}
       <div class="home__featured">
         <h2 class="text-center">{% trans "Featured products" context "Homepage title" %}</h2>
@@ -76,5 +16,5 @@
       </div>
     {% endif %}
     <script type="application/ld+json">{{ webpage_schema|safe }}</script>
-  </div>
+</div>
 {% endblock content %}
