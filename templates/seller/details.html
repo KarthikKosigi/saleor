@@ -6,6 +6,7 @@
 {% load price from taxed_prices %}
 {% load static %}
 {% load status %}
+{% load get_thumbnail get_product_image_thumbnail from product_images %}
 
 {% block title %}{% trans "Your profile" context "User profile page title" %} — {{ block.super }}{% endblock %}
 
@@ -31,7 +32,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="#orders" role="tab">
+          <a class="nav-link" data-toggle="tab" href="#orders" role="tab">
             <h3>{% trans "Recent Orders" context "User profile tab" %}</h3>
           </a>
         </li>
@@ -56,6 +57,13 @@
     </div>
     <div class="tab-content col-lg-11 m-auto">
       <div class="tab-pane active fade show" id="store" role="tabpanel">
+        <div class="text-center" style="padding-bottom:20px"> 
+          <img src="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=510 %}" 
+          data-srcset="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=60 %} 1x, {% get_product_image_thumbnail store.get_first_image method="thumbnail" size=120 %} 2x"
+          height="150px"/>
+          <h2>{{store.name}}</h2>
+          <h3>{{store.address}}</h3>
+        </div>
         <div class="row">
           <div class="col-md-6">
             <form action="" method="post">
@@ -64,7 +72,88 @@
               <input type="submit" class="btn btn-primary narrow" value="{% trans "Update" context "User profile action" %}">
             </form>
           </div>
+          <div class="col-md-6" >
+            <div class="formgroup">
+              <label> Pick Store location</label>
+              <div id="store-map" data-place-id = {{store.place_id}}></div>
+            </div>
+          </div>
         </div>
+          <div class="row" style="padding-top:20px">
+            <div id="images" class="tab-content col s12 m9">
+              <form action="{% url 'stores:store-images-upload' store_pk=store.pk %}" id="store-image-form" novalidate>
+                <div class="dz-message"></div>
+                {% csrf_token %}
+                <div class="row">
+                  <ul class="product-gallery sortable-items" style="list-style-type:none;"
+                  data-post-url="{% url 'stores:store-images-reorder' store_pk=store.pk %}" data-post-name="ordered_images">
+                    {% if images %}
+                      {% for image in images %}
+                        <li class="col s12 m6 l4 sortable-item" style="padding:10px;"
+                            data-id="{{ image.pk }}">
+                          <div class="card">
+                            <div class="card-image product-gallery-item-image">
+                              <img class="responsive-img"
+                                   src="{{ image.image.thumbnail.255x255 }}"
+                                   srcset="{{ image.image.thumbnail.255x255 }} 1x, {{ image.image.thumbnail.510x510 }} 2x"
+                                   alt="">
+                            </div>
+                            <div class="card-content">
+                            </div>
+                            <!-- <div class="sortable__drag-area"></div> -->
+                            <div class="card-action" style="display: none">
+                              <a href="#base-modal"
+                                 class="btn-flat waves-effect modal-trigger-custom"
+                                 data-href="{% url 'stores:store-image-delete' store_pk=store.pk img_pk=image.pk %}">
+                                {% trans "Remove" context "Dashboard remove action" %}
+                              </a>
+                            </div>
+                          </div>
+                        </li>
+                      {% endfor %}
+                    {% else %}
+                      <div class="sortable__drag-area"></div>
+                    {% endif %}
+                  </ul>
+                <div class="col s12 m6 l4 product-gallery-item dropzone-message">
+                  <div class="row">
+                    <span class="product-gallery-item-title product-gallery-item-title--noclip card-title black-text">
+                      <span class="grey-text hide-on-med-and-down">
+                        {% trans "Drop images here to upload" context "Image gallery upload box text" %}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              </form>
+              <script type="application/template" id="template">
+                <li class="col s12 m6 l4 product-gallery-item dz-preview dz-file-preview" style="padding:10px;" data-id="{{ image.pk }}">
+                  <div class="card">
+                    <div class="card-image product-gallery-item-image">
+                      <img data-dz-thumbnail />
+                    </div>
+                    <div class="dz-progress">
+                      <span class="dz-upload" data-dz-uploadprogress></span>
+                    </div>
+                    <div class="card-content">
+                      <span class="product-gallery-item-title card-title black-text">
+                        <span class="grey-text">
+                          {% trans "No description" context "Empty image gallery message" %}
+                        </span>
+                      </span>
+                    </div>
+                    <div class="sortable__drag-area"></div>
+                    <div class="card-action" style="display:none">
+                      <a href="#base-modal" class="btn-flat waves-effect card-action-delete modal-trigger-custom"
+                      data-href-template="{% url 'stores:store-image-delete' store_pk=store.pk img_pk=0 %}">
+                        {% trans "Remove" context "Dashboard remove action" %}
+                      </a>
+                    </div>
+                    </div>
+                </li>
+              </script>
+            </div>
+          </div>
       </div>
       <div class="tab-pane fade" id="orders" role="tabpanel">
         <div id="accordion" role="tablist" aria-multiselectable="true">

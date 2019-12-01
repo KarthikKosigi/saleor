@@ -3,6 +3,7 @@
 {% load render_bundle from webpack_loader %}
 {% load version %}
 {% load serialize_messages from utils %}
+{% load get_product_image_thumbnail from product_images %}
 
 <html lang="{{ LANGUAGE_CODE }}" class="no-js">
   <head>
@@ -70,7 +71,10 @@
             </li>
             <li>
               <a href="{% url 'dashboard:index' %}" class="logo">
-                <svg data-src="{% static "images/logo-document.svg" %}" height="38px" width="176px" />
+                <!-- <svg data-src="{% static "images/logo-document.svg" %}" height="38px" width="176px" /> -->
+                <img src="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=60 %}" 
+                data-srcset="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=60 %} 1x, {% get_product_image_thumbnail store.get_first_image method="thumbnail" size=120 %} 2x"
+                style="width:56px;height:56px;padding:5px"/>
               </a>
             </li>
             <li class="search">
@@ -93,7 +97,7 @@
           <ul class="side-nav">
             <li class="nav-home">
               <a href="{% url 'dashboard:index' %}">
-                {% trans "Home" context "Dashboard homepage" %}
+               {% trans "Home" context "Dashboard homepage" %} 
               </a>
             </li>
             {% if perms.product.manage_products %}
@@ -208,7 +212,7 @@
                       </a>
                     </li>
                   {% endif %}
-                  {% if perms.site.manage_settings %}
+                  {% if perms.site.manage_settings  and request.user.is_site_manager %}
                     <li class="{% block menu_settings_class %}{% endblock %}">
                       <a href="{% url 'dashboard:site-index' %}">
                         {% trans "Site settings" context "Dashboard site settings" %}
@@ -220,7 +224,7 @@
                       {% trans "Taxes" context "Dashboard taxes" %}
                     </a>
                   </li>
-                  {% if perms.page.manage_pages %}
+                  {% if perms.page.manage_pages and request.user.is_site_manager%}
                     <li class="{% block menu_pages_class %}{% endblock %}">
                       <a href="{% url 'dashboard:page-list' %}">
                         {% trans "Pages" context "Dashboard static pages" %}
@@ -245,7 +249,8 @@
           <ul class="breadcrumbs">
             <li class="visible-s">
               <a href="#">
-                {% trans "Home" context "Dashboard homepage" %}
+                {{store.name}} 
+                <!-- {% trans "Home" context "Dashboard homepage" %} -->
               </a>
             </li>
           </ul>

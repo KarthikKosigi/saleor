@@ -250,6 +250,26 @@ class BillingAddressChoiceForm(AddressChoiceForm):
         choices=CHOICES, initial=SHIPPING_ADDRESS, widget=forms.RadioSelect)
 
 
+class ShippingTypeChoiceForm(forms.ModelForm):
+    """Choose one of user's addresses, a shipping one or to create new."""
+
+    DELIVERY = 'delivery'
+    PICKUP = 'pickup'
+    CHOICES = [
+        (PICKUP, pgettext_lazy(
+            'Billing addresses form choice', 'Store Pickup')),
+             (DELIVERY, pgettext_lazy(
+            'Billing addresses form choice', 'Delivery'))]
+
+    shipping_type = forms.ChoiceField(
+        label=pgettext_lazy('Billing addresses form field label', 'Shipping Type'),
+        choices=CHOICES, initial=DELIVERY, widget=forms.RadioSelect)
+
+    class Meta:
+        model = Cart
+        fields = ['shipping_type']
+
+
 class ShippingMethodChoiceField(forms.ModelChoiceField):
     """Shipping method choice field.
 

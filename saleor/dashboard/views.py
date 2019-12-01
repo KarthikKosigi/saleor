@@ -36,7 +36,9 @@ def superuser_required(
 def index(request):
     paginate_by = 10
     store = Store.objects.get(owner_id = request.user.id)
-    orders_to_ship = Order.objects.filter(store_id = store).ready_to_fulfill().select_related(
+    orders_to_ship = Order.objects.filter(store_id = store).filter(shipping_type='delivery').ready_to_fulfill().select_related(
+        'user').prefetch_related('lines', 'payments')
+    orders_to_pickup = Order.objects.filter(store_id = store).filter(shipping_type='pickup').ready_to_fulfill().select_related(
         'user').prefetch_related('lines', 'payments')
     payments = Payment.objects.filter(order__store=store,
         is_active=True, charge_status=ChargeStatus.NOT_CHARGED
@@ -45,6 +47,7 @@ def index(request):
     low_stock = get_low_stock_products(store)
     ctx = {'preauthorized_payments': payments[:paginate_by],
            'orders_to_ship': orders_to_ship[:paginate_by],
+           'orders_to_pickup': orders_to_pickup[:paginate_by],
            'store': store,
            'low_stock': low_stock[:paginate_by]}
     return TemplateResponse(request, 'dashboard/index.html', ctx)

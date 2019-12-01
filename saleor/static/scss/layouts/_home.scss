@@ -70,7 +70,7 @@
     }
   }
   &__supermarket {
-    background-image: url('../images/supermarket.jpg');
+    // background-image: url('../images/supermarket.jpg');
       @include media-breakpoint-up(md) {
         &:before {
           padding-top: 50%;

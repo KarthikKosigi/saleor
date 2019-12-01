@@ -39,6 +39,7 @@ def product_list(request):
         'bulk_action_form': forms.ProductBulkUpdate(),
         'products': products, 'product_types': product_types,
         'filter_set': product_filter,
+        'store': storeid,
         'is_empty': not product_filter.queryset.exists()}
     return TemplateResponse(request, 'dashboard/product/list.html', ctx)
 
@@ -543,8 +544,9 @@ def ajax_upload_image(request, product_pk):
 @staff_member_required
 @permission_required('product.manage_products')
 def attribute_list(request):
+    storeid = Store.objects.get(owner_id = request.user.id)
     attributes = (
-        Attribute.objects.prefetch_related(
+        Attribute.objects.filter(store_id = storeid).prefetch_related(
             'values', 'product_type', 'product_variant_type').order_by('name'))
     attribute_filter = AttributeFilter(request.GET, queryset=attributes)
     attributes = [(
@@ -582,6 +584,9 @@ def attribute_create(request):
     form = forms.AttributeForm(request.POST or None, instance=attribute)
     if form.is_valid():
         attribute = form.save()
+        store = Store.objects.get(owner=request.user)
+        attribute.store = store
+        attribute.save()
         msg = pgettext_lazy('Dashboard message', 'Added attribute')
         messages.success(request, msg)
         return redirect('dashboard:attribute-details', pk=attribute.pk)

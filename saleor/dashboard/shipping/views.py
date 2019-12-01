@@ -10,12 +10,14 @@ from ...shipping.models import ShippingMethod, ShippingZone
 from ..views import staff_member_required
 from .filters import ShippingZoneFilter
 from .forms import ChangeDefaultWeightUnit, ShippingZoneForm, get_shipping_form
+from ...seller.models import Store
 
 
 @staff_member_required
 @permission_required('shipping.manage_shipping')
 def shipping_zone_list(request):
-    zones = ShippingZone.objects.prefetch_related(
+    storeid = Store.objects.get(owner_id = request.user.id)
+    zones = ShippingZone.objects.filter(store_id=storeid).prefetch_related(
         'shipping_methods').order_by('name')
     shipping_zone_filter = ShippingZoneFilter(
         request.GET, queryset=zones)
@@ -46,6 +48,9 @@ def shipping_zone_add(request):
     form = ShippingZoneForm(request.POST or None, instance=zone)
     if form.is_valid():
         zone = form.save()
+        store = Store.objects.get(owner=request.user)
+        zone.store = store
+        zone.save()
         msg = pgettext_lazy('Dashboard message', 'Added shipping zone')
         messages.success(request, msg)
         return redirect('dashboard:shipping-zone-details', pk=zone.pk)

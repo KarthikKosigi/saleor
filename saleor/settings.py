@@ -133,7 +133,7 @@ STATICFILES_DIRS = [
     ('assets', os.path.join(PROJECT_ROOT, 'saleor', 'static', 'assets')),
     ('favicons', os.path.join(PROJECT_ROOT, 'saleor', 'static', 'favicons')),
     ('images', os.path.join(PROJECT_ROOT, 'saleor', 'static', 'images')),
-    ('dashboard\images', os.path.join(
+    ('dashboard/images', os.path.join(
         PROJECT_ROOT, 'saleor', 'static', 'dashboard', 'images'))]
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -152,6 +152,7 @@ context_processors = [
     'saleor.checkout.context_processors.cart_counter',
     'saleor.core.context_processors.search_enabled',
     'saleor.site.context_processors.site',
+    'saleor.core.context_processors.store',
     'social_django.context_processors.backends',
     'social_django.context_processors.login_redirect']
 
@@ -227,6 +228,7 @@ INSTALLED_APPS = [
     'saleor.page',
     'saleor.payment',
     'saleor.seller',
+    'saleor.store',
 
     # External apps
     'versatileimagefield',
@@ -343,6 +345,8 @@ ACCOUNT_ACTIVATION_DAYS = 3
 LOGIN_REDIRECT_URL = 'home'
 
 GOOGLE_ANALYTICS_TRACKING_ID = os.environ.get('GOOGLE_ANALYTICS_TRACKING_ID')
+
+GOOGLE_MAPS_KEY = 'AIzaSyANNkFkaID38ozYq51y1tMKhnIGUz-8hVY'
 
 
 def get_host():
@@ -565,7 +569,10 @@ RAZORPAY = 'razorpay'
 STRIPE = 'stripe'
 
 CHECKOUT_PAYMENT_GATEWAYS = {
-    DUMMY: pgettext_lazy('Payment method name', 'Dummy gateway')}
+    DUMMY: pgettext_lazy('Payment method name', 'Dummy gateway'),
+    RAZORPAY: pgettext_lazy("Payment method name", "RAZORPAY")
+    }
+    
 
 PAYMENT_GATEWAYS = {
     DUMMY: {
@@ -586,7 +593,7 @@ PAYMENT_GATEWAYS = {
             'public_key': os.environ.get('RAZORPAY_PUBLIC_KEY'),
             'secret_key': os.environ.get('RAZORPAY_SECRET_KEY'),
             'prefill': get_bool_from_env('RAZORPAY_PREFILL', True),
-            'store_name': os.environ.get('RAZORPAY_STORE_NAME'),
+            'store_name': "NoQ",
             'store_image': os.environ.get('RAZORPAY_STORE_IMAGE')
         }
     },

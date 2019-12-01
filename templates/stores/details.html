@@ -7,14 +7,33 @@
 
 
 <div class="home">
-    {% if products %}
+  
       <div class="home__featured">
         <h2 class="text-center">{% trans "Featured products" context "Homepage title" %}</h2>
+        {% if products %}
         <div class="row">
           {% include "product/_items.html" %}
         </div>
+        {% else %}
+        <h3 class="text-sm-center">
+          {% trans "No Featured Products Yet" context "No Featured Products Yet" %}
+        </h3>
+      {% endif %}
       </div>
-    {% endif %}
+   
+    <div class="home__featured">
+      <h2 class="text-center">{% trans "Best sellers" context "Homepage title" %}</h2>
+      {% if best_sellers %}
+      <div class="row">
+        {% include "product/_items.html" with products=best_sellers %}
+      </div>
+      {% else %}
+      <h3 class="text-sm-center">
+        {% trans "No Best sellers Yet" context "No Best Sellers Yet" %}
+      </h3>
+      {% endif %}
+    </div>
+   
     <script type="application/ld+json">{{ webpage_schema|safe }}</script>
 </div>
 {% endblock content %}

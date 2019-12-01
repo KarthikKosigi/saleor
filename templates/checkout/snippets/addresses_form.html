@@ -1,5 +1,4 @@
 {% load i18n %}
-
 {% if addresses_form.SHIPPING_ADDRESS %}
   {% trans "Same as shipping" context "Checkout addresses form label" as same_as_shipping %}
   {% include "checkout/snippets/addresses_form_panel.html" with parent_element_id="accordion" address_show=False radio_name=addresses_form.address.html_name radio_value=addresses_form.SHIPPING_ADDRESS label=same_as_shipping value=addresses_form.address.value only %}

@@ -1,0 +1,10 @@
+ {% load i18n_address_tags %}
+<div class="checkout__addresses-panel radio {% if not shipping_show %} shipping_hide{% else %} shipping_show{% endif %}">
+  <label>
+    <div class="card card-default">
+      <div class="card-body">
+        {{radio}}
+      </div>
+    </div>
+  </label>
+</div>

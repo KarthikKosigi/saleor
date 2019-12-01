@@ -5,9 +5,16 @@
 {% block forms %}
   <form method="post" novalidate class="checkout__shipping">
     {% csrf_token %}
-    <h2>{% trans "Shipping address" context "Checkout shipping address title" %}</h2>
-    
+
+    {% for radio in ordertype_form.shipping_type %}
+    {% include "checkout/snippets/ordertype_form_panel.html" with parent_element_id="accordion" shipping_show=True radio_name=radio.choice_label radio=radio only %} 
+    {% endfor %}
+
+    <!-- {{ordertype_form}} -->
+
     <div class="checkout__addresses{{ request.user.is_authenticated|yesno:",--full-width" }}">
+      <div class="shipping_address">
+      <h2>{% trans "Address" context "Checkout shipping address title" %}</h2>
       {% if request.user.is_authenticated %}
         {% include "checkout/snippets/addresses_form.html" with addresses_form=user_form addresses=additional_addresses address_form=address_form only %}
       {% else %}
@@ -15,7 +22,8 @@
         {% include "account/snippets/address_form.html" with address_form=address_form only %}
       {% endif %}
     </div>
-
+    
+    </div>
     <div class="checkout__addresses">
       <button type="submit" class="btn btn-primary">
         {% trans "Continue" context "Checkout shipping address primary action" %}

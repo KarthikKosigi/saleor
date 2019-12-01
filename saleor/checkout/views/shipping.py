@@ -5,6 +5,9 @@ from ..utils import (
     get_cart_data_for_checkout, get_taxes_for_cart,
     update_shipping_address_in_anonymous_cart, update_shipping_address_in_cart)
 
+from ..forms import ShippingTypeChoiceForm
+
+
 
 def anonymous_user_shipping_address_view(request, cart):
     """Display the shipping step for a user who is not logged in."""
@@ -12,6 +15,13 @@ def anonymous_user_shipping_address_view(request, cart):
         update_shipping_address_in_anonymous_cart(
             cart, request.POST or None, request.country))
 
+    ordertype_form = ShippingTypeChoiceForm(request.POST or None, instance=cart)
+
+    if ordertype_form.is_valid():
+        ordertype_form.save()
+        if cart.shipping_type == 'pickup' and updated:
+            return redirect('checkout:summary')
+    
     if updated:
         return redirect('checkout:shipping-method')
 
@@ -19,6 +29,7 @@ def anonymous_user_shipping_address_view(request, cart):
     ctx = get_cart_data_for_checkout(cart, request.discounts, taxes)
     ctx.update({
         'address_form': address_form,
+        'ordertype_form': ordertype_form,
         'user_form': user_form})
     return TemplateResponse(request, 'checkout/shipping_address.html', ctx)
 
@@ -36,6 +47,14 @@ def user_shipping_address_view(request, cart):
     addresses_form, address_form, updated = update_shipping_address_in_cart(
         cart, user_addresses, request.POST or None, request.country)
 
+
+    ordertype_form = ShippingTypeChoiceForm(request.POST or None, instance=cart)
+
+    if ordertype_form.is_valid():
+        ordertype_form.save()
+        if cart.shipping_type == 'pickup' and updated:
+            return redirect('checkout:summary')
+    
     if updated:
         return redirect('checkout:shipping-method')
 
@@ -43,6 +62,7 @@ def user_shipping_address_view(request, cart):
     ctx = get_cart_data_for_checkout(cart, request.discounts, taxes)
     ctx.update({
         'additional_addresses': user_addresses,
+        'ordertype_form': ordertype_form,
         'address_form': address_form,
         'user_form': addresses_form})
     return TemplateResponse(request, 'checkout/shipping_address.html', ctx)

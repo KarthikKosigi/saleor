@@ -14,6 +14,7 @@ from ..account.models import Address
 from ..core.utils.taxes import ZERO_TAXED_MONEY, zero_money
 from ..core.weight import zero_weight
 from ..shipping.models import ShippingMethod
+from . import ShippingType
 
 CENTS = Decimal('0.01')
 
@@ -64,6 +65,9 @@ class Cart(models.Model):
     translated_discount_name = models.CharField(
         max_length=255, blank=True, null=True)
     voucher_code = models.CharField(max_length=12, blank=True, null=True)
+    shipping_type = models.CharField(
+        max_length=32, default=ShippingType.DELIVERY,
+        choices=ShippingType.CHOICES)
 
     objects = CartQueryset.as_manager()
 
@@ -81,7 +85,10 @@ class Cart(models.Model):
 
     def is_shipping_required(self):
         """Return `True` if any of the lines requires shipping."""
-        return any(line.is_shipping_required() for line in self)
+        return any(line.is_shipping_required() for line in self) 
+
+    def is_store_pickup(self):
+        return  self.shipping_type == ShippingType.PICKUP
 
     def get_shipping_price(self, taxes):
         return (

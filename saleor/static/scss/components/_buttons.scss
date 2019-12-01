@@ -95,4 +95,28 @@ a.btn {
     outline: none;
     box-shadow: none;
   }
+  &-flat {
+    @extend .waves-lightgray;
+    color: $secondary-color;
+    &:hover {
+      background: unset;
+    }
+    &:focus {
+      background: rgba(0,0,0,0.05);
+    }
+  }
+}
+
+.card .card-action {
+  padding: 10px 8px;
+  &.wide {
+    padding: 16px;
+  }
+  a:not(.btn):not(.btn-large):not(.btn-large):not(.btn-floating) {
+    @extend .btn-flat;
+    margin-right: 0;
+    &:hover {
+      color: $secondary-color;
+    }
+  }
 }

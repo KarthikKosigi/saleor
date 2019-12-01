@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import forms as django_forms, update_session_auth_hash
 from django.utils.translation import pgettext, pgettext_lazy
+from django.utils.text import slugify
 from phonenumbers.phonenumberutil import country_code_for_region
 
 from ..account import emails
@@ -87,6 +88,12 @@ class SignupForm(forms.ModelForm, FormWithReCaptcha):
             'unique': pgettext_lazy(
                 'Registration error',
                 'This email has already been registered.')})
+    store_name = forms.CharField(
+        label=pgettext('Store', 'Store Name'))
+    store_description = forms.CharField(
+        label=pgettext('Description', 'Description'),
+        max_length=250, required=False, strip=True,
+        widget=forms.Textarea({'rows': 3}))
 
     class Meta:
         model = User
@@ -101,13 +108,15 @@ class SignupForm(forms.ModelForm, FormWithReCaptcha):
     def save(self, request=None, commit=True):
         user = super().save(commit=False)
         password = self.cleaned_data['password']
+        store_name = self.cleaned_data['store_name']
+        store_description = self.cleaned_data['store_description']
         user.set_password(password)
         user.is_seller = True
         user.is_superuser = True
         user.is_staff = True
         if commit:
             user.save()
-            store = Store.objects.create(name='Sampoorna', description="Best super market", owner=user)
+            store = Store.objects.create(name=store_name, description= store_description, owner=user)
             store.save()
         return user
 
@@ -146,7 +155,8 @@ class NameForm(forms.ModelForm):
 class StoreForm(forms.ModelForm):
     class Meta:
         model = Store
-        fields = ['name', 'description']
+        fields = ['name', 'description', 'place_id', 'address']
+        widgets = {'place_id': forms.widgets.HiddenInput()}
         labels = {
             'name': pgettext_lazy(
                 'Seller form: Name field', 'Name'),

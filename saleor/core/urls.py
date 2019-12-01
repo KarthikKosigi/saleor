@@ -5,6 +5,8 @@ from . import views
 
 urlpatterns = [
     url(r'^seller/$', views.sellerhome, name='seller-home'),
+    url(r'^locations/$', views.getLocations, name='locations'),
+    url(r'^reverse-geocode/$', views.reverse_geocode, name='reverse-geocode'),
     url(r'^$', views.home, name='home'),
     url(r'^style-guide/', views.styleguide, name='styleguide'),
     url(r'^impersonate/(?P<uid>\d+)/', views.impersonate,

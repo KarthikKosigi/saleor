@@ -44,7 +44,7 @@
   <!--[if lt IE 9]>
     <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
-</head>
+ </head>
 
 <body>
 {% block header %}
@@ -53,8 +53,7 @@
       <div class=" d-none d-md-block container">
       <div class="row">
         <div class="col-6">
-          <!--<p class="text-left">{{ site.settings.translated.header_text }}</p>-->
-          <p class="text-left">NoQ - End your waiting in long queues</p>
+          <p class="text-left">{{ site.settings.translated.header_text }}</p>
         </div>
         <div class="col-6">
           <ul class="float-right">
@@ -198,13 +197,17 @@
             {% if SEARCH_IS_ENABLED %}
               <form class="form-inline search-form">
                 <br/>
-                <input class="form-control" type="text" name="q"
+                <!-- <input class="form-control" type="text" name="q"
                        value="{% if query %}{{ query }}{% endif %}"
                        placeholder="{% trans "Enter your delivery address" %}"
                        required>
                 <button class="btn btn-primary narrow" type="submit">
                   {% trans "Find Groceries" %}
-                </button>
+                </button> -->
+                <div id="location-picker" style="width:100%"></div>
+                <button class="btn btn-primary narrow" type="submit">
+                    {% trans "Find Groceries" %}
+                  </button>
             {% endif %}
           </fieldset>
         </form>
@@ -281,7 +284,7 @@
   <div class="footer__menus">
     <div class="container">
       <div class="row">
-          {% footer_menu site_menu=site.settings.bottom_menu %}
+          <!-- {% footer_menu site_menu=site.settings.bottom_menu %} -->
         <div class="col-md-2 col-6">
         <ul class="menu">
           <li class="nav-item__dropdown menu__item">

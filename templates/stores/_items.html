@@ -1,15 +1,17 @@
 {% load static i18n %}
 {% for store in stores %}
+{% load get_thumbnail get_product_image_thumbnail from product_images %}
 
   <div class="col-6 col-lg-3 product-list">
     <a href="{{ store.get_absolute_url }}" class="link--clean">
       <div class="text-center">
         <div>
           <div class="product-image">
-            <img src="{% static store.get_first_image %}"/>
+            <img src="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=60 %}" 
+            data-srcset="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=60 %} 1x, {% get_product_image_thumbnail store.get_first_image method="thumbnail" size=120 %} 2x"
+            height="200px" width="200px"/>
           </div>
-          <h3 class="product-list-item-name" title="{{ product.translated }}">{{ store.name }}</h3>
-           <!-- <span class="product-list-item-name" title="{{ product.translated }}">{{ store.description }}</span> -->
+          <h3 class="product-list-item-name">{{ store.name }}</h3>
         </div>
       </div>
     </a>

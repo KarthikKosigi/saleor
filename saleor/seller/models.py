@@ -34,6 +34,8 @@ class Store(SeoModel, PublishableModel):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True, related_name='owner',
         on_delete=models.SET_NULL)
+    place_id = models.CharField(max_length=128, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
 
 
     def __str__(self):
@@ -45,9 +47,8 @@ class Store(SeoModel, PublishableModel):
             kwargs={'slug': self.get_slug(), 'store_id': self.id})
 
     def get_first_image(self):
-        # images = list(self.images.all())
-        # return images[0] if images else None
-        return "images/" + self.name +".jpg"
+        images = list(self.images.all())
+        return images[0] if images else None
 
     def get_slug(self):
         return slugify(smart_text(unidecode(self.name)))
@@ -60,10 +61,11 @@ class StoreImage(SortableModel):
         upload_to='stores', ppoi_field='ppoi', blank=False)
     ppoi = PPOIField()
     alt = models.CharField(max_length=128, blank=True)
+    description = models.TextField()
 
     class Meta:
         ordering = ('sort_order', )
-        app_label = 'stores'
+        app_label = 'store'
 
     def get_ordering_queryset(self):
         return self.store.images.all()

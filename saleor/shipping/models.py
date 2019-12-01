@@ -16,12 +16,15 @@ from . import ShippingMethodType
 from .utils import (
     applicable_price_based_methods, applicable_weight_based_methods,
     get_price_type_display, get_weight_type_display)
+from ..seller.models import Store
 
 
 class ShippingZone(models.Model):
     name = models.CharField(max_length=100)
     countries = CountryField(multiple=True, default=[], blank=True)
     default = models.BooleanField(default=False)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='shipping_zones', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

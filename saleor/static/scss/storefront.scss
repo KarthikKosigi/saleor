@@ -1,6 +1,8 @@
 @import "variables";
 @import "~bootstrap/scss/bootstrap";
 
+
+@import "components/global";
 @import "components/breadcrumbs";
 @import "components/buttons";
 @import "components/cards";
@@ -17,6 +19,10 @@
 @import "components/typography";
 @import "components/variant-picker";
 @import "components/language-picker";
+@import "components/product-gallery";
+@import "components/dropzone";
+@import "components/modals";
+
 
 @import "layouts/account";
 @import "layouts/cart";

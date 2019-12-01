@@ -9,6 +9,8 @@ from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import pgettext, ugettext_lazy as _
 from django.views.decorators.http import require_POST
+from django.utils.text import slugify
+from text_unidecode import unidecode
 
 from ..checkout.utils import find_and_assign_anonymous_cart
 from ..core.utils import get_paginator_items
@@ -38,14 +40,17 @@ def get_or_process_name_form(request):
 
 
 def get_or_process_store_form(request):
-    form = StoreForm(data=request.POST or None, instance=request.user)
+    store = Store.objects.get(owner=request.user)
+    form = StoreForm(data=request.POST or None, instance=store)
     if form.is_valid():
         store = form.save(commit=False)
 
         store,created = Store.objects.get_or_create(owner_id=request.user.id)
         store.description = form.cleaned_data.get('description')
         store.name = form.cleaned_data.get('name')
+        store.place_id = form.cleaned_data.get('place_id')
         store.slug = slugify(unidecode(form.cleaned_data.get('name')))
+        store.address = form.cleaned_data.get('address')
         store.save()
         messages.success(request, pgettext(
             'Storefront message', 'Store details successfully updated.'))
@@ -54,16 +59,19 @@ def get_or_process_store_form(request):
 
 @login_required
 def details(request):
+    store = Store.objects.prefetch_related('images').get(owner=request.user)
     password_form = get_or_process_password_form(request)
     name_form = get_or_process_name_form(request)
     store_form = get_or_process_store_form(request)
     orders = request.user.orders.confirmed().prefetch_related('lines')
+    images = store.images.all()
     orders_paginated = get_paginator_items(
         orders, settings.PAGINATE_BY, request.GET.get('page'))
     ctx = {'addresses': request.user.addresses.all(),
            'orders': orders_paginated,
            'change_password_form': password_form,
            'store_form': store_form,
+           'images': images,
            'user_name_form': name_form}
 
     return TemplateResponse(request, 'seller/details.html', ctx)

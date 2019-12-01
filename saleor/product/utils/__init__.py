@@ -20,7 +20,9 @@ def products_visible_to_user(user,*args, **kwargs):
         if store_id is None:
             return Product.objects.all()
         return Product.objects.filter(store_id=store_id).all()
-    return Product.objects.published()
+    if store_id is None:
+        return Product.objects.published()
+    return Product.objects.filter(store_id=store_id).published()
 
 
 def products_with_details(user):

@@ -7,6 +7,8 @@ from ..core.weight import WeightUnits
 from . import AuthenticationBackends
 from .patch_sites import patch_contrib_sites
 
+from ..seller.models import Store
+
 patch_contrib_sites()
 
 
@@ -31,6 +33,8 @@ class SiteSettings(models.Model):
     default_weight_unit = models.CharField(
         max_length=10, choices=WeightUnits.CHOICES,
         default=WeightUnits.KILOGRAM)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='site_settings', on_delete=models.CASCADE)
 
     translated = TranslationProxy()
 

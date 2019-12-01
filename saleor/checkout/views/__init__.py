@@ -87,9 +87,10 @@ def checkout_shipping_method(request, cart):
 def checkout_summary(request, cart):
     """Display the correct order summary."""
     if cart.is_shipping_required():
-        view = validate_shipping_method(summary_with_shipping_view)
-        view = validate_shipping_address(view)
-        return view(request, cart)
+        if not cart.is_store_pickup():
+            view = validate_shipping_method(summary_with_shipping_view)
+            view = validate_shipping_address(view)
+            return view(request, cart)
     if request.user.is_authenticated:
         return summary_without_shipping(request, cart)
     return anonymous_summary_without_shipping(request, cart)

@@ -1,13 +1,16 @@
 {% load static %}
 {% load footer_menu menu from shop %}
 {% load i18n %}
+{% load get_thumbnail get_product_image_thumbnail from product_images %}
 
 <div class="home">
     <div class="row home__supermarket" style="margin-top: 10px;"> 
-        <div style="width:100%;padding:25px;box-shadow: 10px 10px 5px grey;text-shadow: 2px 2px 4px #000000;" >
-            <img src="{% static store.get_first_image %}" height="150px"/>
+        <div style="width:100%;padding:25px;color:black" >
+            <img src="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=510 %}" 
+            data-srcset="{% get_product_image_thumbnail store.get_first_image method="thumbnail" size=60 %} 1x, {% get_product_image_thumbnail store.get_first_image method="thumbnail" size=120 %} 2x"
+            height="150px"/>
             <h1>{{store.name}}</h1>
-            <h3>Manikonda,Hyderabad</h3>
+            <h3>{{store.address}}</h3>
           </div>
     </div>
     </div>
@@ -19,13 +22,13 @@
       </div>
       <br/>
     <div>
-        <form class="form-inline search-form" action="{{store.get_absolute_url}}search">
+        <form class="form-inline search-form" action="{{store.get_absolute_url}}search" style="width:50%;margin:auto">
             <input class="form-control" type="text" name="q"
                    value="{% if query %}{{ query }}{% endif %}"
                    placeholder="{% trans "Search for product" %}"
                    required>
-            <button class="btn btn-primary" type="submit">
-              {% trans "Search" %} <svg data-src="{% static "images/search.svg" %}" width="18" height="18"/>
+            <button class="btn btn-secondary variant-picker__option" type="submit">
+              {% trans "Search" %}  <svg data-src="{% static "images/search.svg" %}" width="18" height="18"/>
             </button></form>
     </div>
 

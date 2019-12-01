@@ -205,3 +205,19 @@ def display_order_event(order_event):
     if event_type == OrderEvents.OTHER.value:
         return order_event.parameters['message']
     raise ValueError('Not supported event type: %s' % (event_type))
+
+
+class OrderType:
+    DELIVERY = 'delivery'
+    PICKUP = 'pickup'
+   
+
+    CHOICES = [
+        (DELIVERY, pgettext_lazy(
+            'Status for a fully editable, not confirmed order created by '
+            'staff users',
+            'Delivery')),
+        (PICKUP, pgettext_lazy(
+            'Status for an order with no items marked as fulfilled',
+            'Pickup'))]
+        

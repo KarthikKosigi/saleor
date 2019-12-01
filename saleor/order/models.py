@@ -22,9 +22,10 @@ from ..core.weight import WeightUnits, zero_weight
 from ..discount.models import Voucher
 from ..payment import ChargeStatus, TransactionKind
 from ..shipping.models import ShippingMethod
-from . import FulfillmentStatus, OrderEvents, OrderStatus, display_order_event
+from . import FulfillmentStatus, OrderEvents, OrderStatus, OrderType, display_order_event
 from ..seller.models import Store
 
+from . import OrderType
 
 class OrderQueryset(models.QuerySet):
     def confirmed(self):
@@ -66,6 +67,9 @@ class Order(models.Model):
     status = models.CharField(
         max_length=32, default=OrderStatus.UNFULFILLED,
         choices=OrderStatus.CHOICES)
+    shipping_type = models.CharField(
+        max_length=32, default=OrderType.DELIVERY,
+        choices=OrderType.CHOICES)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True, related_name='orders',
         on_delete=models.SET_NULL)
@@ -199,6 +203,9 @@ class Order(models.Model):
             return last_payment.get_charge_status_display()
         return dict(ChargeStatus.CHOICES).get(ChargeStatus.NOT_CHARGED)
 
+    def is_store_pickup(self):
+        return  self.shipping_type == OrderType.PICKUP
+
     def is_pre_authorized(self):
         return self.payments.filter(
             is_active=True,
@@ -210,6 +217,8 @@ class Order(models.Model):
         return sum([line.quantity_fulfilled for line in self])
 
     def is_shipping_required(self):
+        if self.shipping_type == "pickup":
+            return False
         return any(line.is_shipping_required for line in self)
 
     def get_subtotal(self):

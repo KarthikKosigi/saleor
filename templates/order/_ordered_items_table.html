@@ -8,7 +8,7 @@
 {% if order.user == user %}
   <div class="order-details__addresses">
     <div class="row">
-      {% if order.is_shipping_required %}
+      {% if not order.is_store_pickup %}
         <div class="col-6">
           <h3>
             <b>

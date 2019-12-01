@@ -320,6 +320,8 @@ class Attribute(models.Model):
     product_variant_type = models.ForeignKey(
         ProductType, related_name='variant_attributes', blank=True,
         null=True, on_delete=models.CASCADE)
+    store = models.ForeignKey(
+        Store, null=True, blank=True, related_name='store_attributes', on_delete=models.CASCADE)
 
     translated = TranslationProxy()
 

@@ -442,7 +442,7 @@ def update_billing_address_in_cart_with_shipping(
         cart, data, user_addresses, country)
 
     updated = False
-
+   
     if addresses_form.is_valid() and not preview:
         address = None
         address_id = addresses_form.cleaned_data['address']
@@ -487,6 +487,10 @@ def update_billing_address_in_anonymous_cart(cart, data, country):
     user_form = AnonymousUserBillingForm(data, instance=cart)
 
     updated = False
+
+    if cart.shipping_type == 'pickup' and not preview:
+        change_billing_address_in_cart(cart, cart.shipping_address)
+        updated = True
 
     if user_form.is_valid() and address_form.is_valid() and not preview:
         user_form.save()
@@ -818,6 +822,7 @@ def _process_shipping_data_for_order(cart, taxes):
 
     return {
         'shipping_address': shipping_address,
+        'shipping_type': cart.shipping_type,
         'shipping_method': cart.shipping_method,
         'shipping_method_name': smart_text(cart.shipping_method),
         'shipping_price': cart.get_shipping_price(taxes),
