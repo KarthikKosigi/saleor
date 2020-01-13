@@ -100,8 +100,8 @@ USE_TZ = True
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 EMAIL_URL = os.environ.get('EMAIL_URL')
-SENDGRID_USERNAME = os.environ.get('SENDGRID_USERNAME')
-SENDGRID_PASSWORD = os.environ.get('SENDGRID_PASSWORD')
+SENDGRID_USERNAME = 'apikey'
+SENDGRID_PASSWORD = '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'
 if not EMAIL_URL and SENDGRID_USERNAME and SENDGRID_PASSWORD:
     EMAIL_URL = 'smtp://%s:%s@smtp.sendgrid.net:587/?tls=True' % (
         SENDGRID_USERNAME, SENDGRID_PASSWORD)
@@ -121,7 +121,7 @@ ENABLE_SSL = get_bool_from_env('ENABLE_SSL', False)
 if ENABLE_SSL:
     SECURE_SSL_REDIRECT = not DEBUG
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+DEFAULT_FROM_EMAIL = 'mohrissa@gmail.com'
 ORDER_FROM_EMAIL = os.getenv('ORDER_FROM_EMAIL', DEFAULT_FROM_EMAIL)
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
@@ -346,8 +346,7 @@ LOGIN_REDIRECT_URL = 'home'
 
 GOOGLE_ANALYTICS_TRACKING_ID = os.environ.get('GOOGLE_ANALYTICS_TRACKING_ID')
 
-GOOGLE_MAPS_KEY = ''
-
+GOOGLE_MAPS_KEY = 'AIzaSyAOo7Ul3fCYsFTLe1DEZ7EHVWRC8HgsQYk'
 
 def get_host():
     from django.contrib.sites.models import Site

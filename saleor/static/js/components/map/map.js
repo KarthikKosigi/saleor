@@ -85,7 +85,7 @@ import LocationField from '../location-field';
 
 const MyMapComponent = compose(
   withProps({
-    googleMapURL: 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyANNkFkaID38ozYq51y1tMKhnIGUz-8hVY',
+    googleMapURL: 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyAOo7Ul3fCYsFTLe1DEZ7EHVWRC8HgsQYk',
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: <div style={{ height: `580px`, paddingTop: '20px' }} />,
     mapElement: <div style={{ height: `100%` }} />
@@ -109,7 +109,6 @@ class MyFancyComponent extends React.PureComponent {
     this.delayedShowMarker();
     const { placeId } = this.props;
     if (placeId) {
-      alert(placeId);
       this.getLatLng(placeId);
     }
   }

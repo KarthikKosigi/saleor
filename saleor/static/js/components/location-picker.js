@@ -8,7 +8,7 @@ export default $(document).ready((e) => {
 
   function handleChange(locationObj) {
     if (locationObj) {
-      $.cookie('location', locationObj.place_id, { expires: 10 });
+      $.cookie('location', locationObj.place_id, { path: '/' });
       localStorage.setItem(locationObj.place_id, JSON.stringify(locationObj));
       locationStore.setLocation(locationObj.place_id);
       document.location.reload();

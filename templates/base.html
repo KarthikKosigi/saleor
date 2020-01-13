@@ -211,6 +211,7 @@
   {% block content %}
   {% endblock content %}
   <div id="base-modal" class="modal"></div>
+  <div id="loader" style="width:100%"></div> 
 </div>
 {% block footer %}
   <footer class="footer">
@@ -276,6 +277,22 @@
             {% endif %}
           </ul>
         </div>
+        <div class="col-md-2 col-6">
+          <ul class="menu">
+            <li class="nav-item__dropdown menu__item">
+              <a>
+                <strong>
+                  {% trans "Seller" %}
+                </strong>
+              </a>
+              <hr />
+              <li>
+                <a rel="nofollow" href="{% url "seller:signup" %}">
+                  {% trans "Register" context "Main navigation item" %}
+                </a>
+              </li>
+            </ul>
+          </div>
         <div class="offset-md-2 col-md-4 col-12">
           <div class="footer__menus__social-container">
             <div class="footer__menus__social">

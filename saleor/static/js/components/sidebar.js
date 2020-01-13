@@ -10,6 +10,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ImageIcon from '@material-ui/icons/AccessTime';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 function TemporaryDrawer(props) {
   const [state, setState] = React.useState({
@@ -39,17 +40,19 @@ function TemporaryDrawer(props) {
   );
 
   function itemClick(event, key) {
-    $.cookie('location', key, { expires: 10 });
+    $.cookie('location', key, { path: '/' });
     location.setLocation(key);
     document.location.reload();
   }
 
   function getRecentSearches() {
     var items = [];
+    const styleObj = { maxWidth: 500 };
     for (let [key, value] of Object.entries(localStorage)) {
       const obj = JSON.parse(value);
       items.push(
         <ListItem
+          style = {styleObj}
           button
           onClick={ event => itemClick(event, obj.place_id)}>
           <ImageIcon />
@@ -73,7 +76,7 @@ function TemporaryDrawer(props) {
 
   function loadStores(locationObj) {
     if (locationObj) {
-      $.cookie('location', locationObj.place_id, { expires: 10 });
+      $.cookie('location', locationObj.place_id, { path: '/' });
       localStorage.setItem(locationObj.place_id, JSON.stringify(locationObj));
       location.setLocation(locationObj.place_id);
       document.location.reload();
@@ -82,6 +85,7 @@ function TemporaryDrawer(props) {
 
     const SEARCH_URI = '/reverse-geocode';
 
+    $('#loader').show();
     fetch(`${SEARCH_URI}?latlng=` + location.location,
       {
         method: 'GET'
@@ -95,6 +99,7 @@ function TemporaryDrawer(props) {
         let params = new URLSearchParams(search);
         let query = params.get('q') || '';
         $('#stores-container').load('/stores/near-by/?q=' + query + '&latlng=' + latlng);
+        $('#loader').hide();
       }).catch(() => {
       });
   }
@@ -114,10 +119,18 @@ function TemporaryDrawer(props) {
 
 export default $(document).ready((e) => {
   const locationPicker = document.getElementById('sidebar-picker');
+  const loader = document.getElementById('loader');
 
   if (locationPicker) {
     ReactDOM.render(
       <TemporaryDrawer location={location}></TemporaryDrawer>, locationPicker
     );
+  }
+
+  if (loader) {
+    ReactDOM.render(
+      <LinearProgress variant="query" />, loader
+    );
+    $('#loader').hide();
   }
 });

@@ -68,7 +68,6 @@ class LocationField extends React.Component {
   getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.getLocationDetails.bind(this));
-      console.log('hey');
     } else {
       alert('Geolocation is not supported by this browser.');
     }
@@ -86,7 +85,7 @@ class LocationField extends React.Component {
       .then(({results}) => {
         if (results && results.length) {
           let locationObj = results[0];
-          $.cookie('location', locationObj.place_id, { expires: 10 });
+          $.cookie('location', locationObj.place_id, { path: '/' });
           localStorage.setItem(locationObj.place_id, JSON.stringify(locationObj));
           location.setLocation(locationObj.place_id);
           document.location.reload();

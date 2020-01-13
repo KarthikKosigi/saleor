@@ -1,7 +1,7 @@
 {% load static i18n %}
+{% if stores %}
 {% for store in stores %}
 {% load get_thumbnail get_product_image_thumbnail from product_images %}
-
   <div class="col-6 col-lg-3 product-list">
     <a href="{{ store.get_absolute_url }}" class="link--clean">
       <div class="text-center">
@@ -17,3 +17,8 @@
     </a>
   </div>
 {% endfor %}
+{% else %}
+<h3 class="text-center" style="width:100%">
+  {% trans "Oops we are not serving here yet. Try another location where we are active." context "No Stores Yet" %}
+</h3>
+{% endif %}
