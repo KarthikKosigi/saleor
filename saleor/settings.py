@@ -346,7 +346,7 @@ LOGIN_REDIRECT_URL = 'home'
 
 GOOGLE_ANALYTICS_TRACKING_ID = os.environ.get('GOOGLE_ANALYTICS_TRACKING_ID')
 
-GOOGLE_MAPS_KEY = 'AIzaSyAOo7Ul3fCYsFTLe1DEZ7EHVWRC8HgsQYk'
+GOOGLE_MAPS_KEY = ''
 
 def get_host():
     from django.contrib.sites.models import Site
