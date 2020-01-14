@@ -101,7 +101,7 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 EMAIL_URL = os.environ.get('EMAIL_URL')
 SENDGRID_USERNAME = 'apikey'
-SENDGRID_PASSWORD = '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'
+SENDGRID_PASSWORD = ''
 if not EMAIL_URL and SENDGRID_USERNAME and SENDGRID_PASSWORD:
     EMAIL_URL = 'smtp://%s:%s@smtp.sendgrid.net:587/?tls=True' % (
         SENDGRID_USERNAME, SENDGRID_PASSWORD)
@@ -346,7 +346,7 @@ LOGIN_REDIRECT_URL = 'home'
 
 GOOGLE_ANALYTICS_TRACKING_ID = os.environ.get('GOOGLE_ANALYTICS_TRACKING_ID')
 
-GOOGLE_MAPS_KEY = ''
+GOOGLE_MAPS_KEY = 'AIzaSyAOo7Ul3fCYsFTLe1DEZ7EHVWRC8HgsQYk'
 
 def get_host():
     from django.contrib.sites.models import Site
